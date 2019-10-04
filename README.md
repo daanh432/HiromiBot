@@ -1,2 +1,0 @@
-# HiromiBot
-Hiromi Discord Bot
