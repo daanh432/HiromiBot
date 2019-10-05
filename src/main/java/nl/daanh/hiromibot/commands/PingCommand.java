@@ -19,7 +19,12 @@ public class PingCommand implements CommandInterface {
     @Override
     public String getHelp() {
         return "Returns amount of time bot takes to contact the Discord API\n" +
-                "Usage: `" + Secrets.PREFIX + getInvoke() + "`";
+                getUsage();
+    }
+
+    @Override
+    public String getUsage() {
+        return "Usage: `" + Secrets.PREFIX + getInvoke() + "`";
     }
 
     @Override

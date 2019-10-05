@@ -46,7 +46,12 @@ public class UserInformationCommand implements CommandInterface {
     @Override
     public String getHelp() {
         return "Displays information about yourself or a different user.\n" +
-                "Usage: `" + Secrets.PREFIX + getInvoke() + " [user name/@user mention/user id]`";
+                getUsage();
+    }
+
+    @Override
+    public String getUsage() {
+        return "Usage: `" + Secrets.PREFIX + getInvoke() + " [user name/@user mention/user id]`";
     }
 
     @Override

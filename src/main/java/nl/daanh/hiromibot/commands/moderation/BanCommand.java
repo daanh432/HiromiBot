@@ -18,7 +18,7 @@ public class BanCommand implements CommandInterface {
         Member selfMember = event.getGuild().getSelfMember();
 
         if (args.isEmpty()) {
-            channel.sendMessage("Missing arguments. Usage: `" + Secrets.PREFIX + getInvoke() + "` [user name/@user mention/user id] <reason>").queue();
+            channel.sendMessage("Missing arguments. " + getUsage()).queue();
             return;
         }
 
@@ -42,13 +42,19 @@ public class BanCommand implements CommandInterface {
             return;
         }
 
-        event.getGuild().kick(targetMember, String.format("Kicked by: %#s, with reason: %s", event.getAuthor(), kickReason)).queue();
-        channel.sendMessage(String.format("User %#s has been kicked.", targetMember)).queue();
+        event.getGuild().ban(targetMember, 0).reason(String.format("Banned by: %#s, with reason: %s", event.getAuthor(), kickReason)).queue();
+        channel.sendMessage(String.format("User %#s has been banned.", targetMember)).queue();
     }
 
     @Override
     public String getHelp() {
-        return null;
+        return "Bans specified user off the server\n" +
+                getUsage();
+    }
+
+    @Override
+    public String getUsage() {
+        return "Usage: `" + Secrets.PREFIX + getInvoke() + "` [user name/@user mention/user id] <reason>";
     }
 
     @Override

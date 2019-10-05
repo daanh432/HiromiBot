@@ -11,6 +11,7 @@ import nl.daanh.hiromibot.objects.CommandInterface;
 import java.util.List;
 
 public class KickCommand implements CommandInterface {
+
     @Override
     public void handle(List<String> args, GuildMessageReceivedEvent event) {
         TextChannel channel = event.getChannel();
@@ -18,7 +19,7 @@ public class KickCommand implements CommandInterface {
         Member selfMember = event.getGuild().getSelfMember();
 
         if (args.isEmpty()) {
-            channel.sendMessage("Missing arguments. Usage: `" + Secrets.PREFIX + getInvoke() + "` [user name/@user mention/user id] <reason>").queue();
+            channel.sendMessage("Missing arguments. " + getUsage()).queue();
             return;
         }
 
@@ -49,8 +50,14 @@ public class KickCommand implements CommandInterface {
     @Override
     public String getHelp() {
         return "Kicks specified user off the server\n" +
-                "Usage: `" + Secrets.PREFIX + getInvoke() + "` [user name/@user mention/user id] <reason>";
+                getUsage();
     }
+
+    @Override
+    public String getUsage() {
+        return "Usage: `" + Secrets.PREFIX + getInvoke() + "` [user name/@user mention/user id] <reason>";
+    }
+
 
     @Override
     public String getInvoke() {

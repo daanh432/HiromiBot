@@ -50,7 +50,12 @@ public class HelpCommand implements CommandInterface {
     @Override
     public String getHelp() {
         return "Show help information about all commands\n" +
-                "Usage: `" + Secrets.PREFIX + getInvoke() + "` || `" + Secrets.PREFIX + getInvoke() + " command`";
+                getUsage();
+    }
+
+    @Override
+    public String getUsage() {
+        return "Usage: `" + Secrets.PREFIX + getInvoke() + "` || `" + Secrets.PREFIX + getInvoke() + " command`";
     }
 
     @Override

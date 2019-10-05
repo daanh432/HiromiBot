@@ -10,5 +10,7 @@ public interface CommandInterface {
 
     String getHelp();
 
+    String getUsage();
+
     String getInvoke();
 }
