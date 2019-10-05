@@ -10,4 +10,4 @@ gradle
 
 .idea
 
-*/Secrets.class
+/src/main/java/nl/daanh/hiromibot/Secrets.java
