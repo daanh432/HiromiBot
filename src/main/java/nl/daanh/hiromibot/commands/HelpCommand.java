@@ -18,7 +18,7 @@ public class HelpCommand implements CommandInterface {
     }
 
     @Override
-    public void Handle(List<String> args, GuildMessageReceivedEvent event) {
+    public void handle(List<String> args, GuildMessageReceivedEvent event) {
         if (args.isEmpty()) {
             if (event.getGuild().getSelfMember().hasPermission(event.getMessage().getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
                 event.getChannel().sendMessage(GenerateEmbed().build()).queue();
@@ -32,29 +32,29 @@ public class HelpCommand implements CommandInterface {
 
         if (command == null) {
             event.getChannel().sendMessage("This command doesn't exist\n" +
-                    "Use `" + Secrets.PREFIX + GetInvoke() + "` for a list of commands").queue();
+                    "Use `" + Secrets.PREFIX + getInvoke() + "` for a list of commands").queue();
             return;
         }
 
-        event.getChannel().sendMessage("Help for the command `" + command.GetInvoke() + "`\n" + command.GetHelp()).queue();
+        event.getChannel().sendMessage("Help for the command `" + command.getInvoke() + "`\n" + command.getHelp()).queue();
     }
 
     private EmbedBuilder GenerateEmbed() {
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("These are all my amazing commands!");
         StringBuilder descriptionBuilder = builder.getDescriptionBuilder();
-        commandHandler.GetCommands().forEach(command -> descriptionBuilder.append("`").append(command.GetInvoke()).append("` - ").append(command.GetHelp().split("\n")[0]).append("\n"));
+        commandHandler.GetCommands().forEach(command -> descriptionBuilder.append("`").append(command.getInvoke()).append("` - ").append(command.getHelp().split("\n")[0]).append("\n"));
         return builder;
     }
 
     @Override
-    public String GetHelp() {
+    public String getHelp() {
         return "Show help information about all commands\n" +
-                "Usage: `" + Secrets.PREFIX + GetInvoke() + "` || `" + Secrets.PREFIX + GetInvoke() + " command`";
+                "Usage: `" + Secrets.PREFIX + getInvoke() + "` || `" + Secrets.PREFIX + getInvoke() + " command`";
     }
 
     @Override
-    public String GetInvoke() {
+    public String getInvoke() {
         return "help";
     }
 }

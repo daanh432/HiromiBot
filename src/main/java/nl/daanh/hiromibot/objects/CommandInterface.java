@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface CommandInterface {
 
-    void Handle(List<String> args, GuildMessageReceivedEvent event);
+    void handle(List<String> args, GuildMessageReceivedEvent event);
 
-    String GetHelp();
+    String getHelp();
 
-    String GetInvoke();
+    String getInvoke();
 }

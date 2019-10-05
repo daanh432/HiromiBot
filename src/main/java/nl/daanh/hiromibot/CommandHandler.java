@@ -19,8 +19,8 @@ public class CommandHandler {
     }
 
     private void AddCommand(CommandInterface command) {
-        if (!commands.containsKey(command.GetInvoke())) {
-            commands.put(command.GetInvoke(), command);
+        if (!commands.containsKey(command.getInvoke())) {
+            commands.put(command.getInvoke(), command);
         }
     }
 
@@ -39,7 +39,7 @@ public class CommandHandler {
         if (commands.containsKey(command)) {
             final List<String> args = Arrays.asList(splitMessage).subList(1, splitMessage.length);
 
-            commands.get(command).Handle(args, event);
+            commands.get(command).handle(args, event);
         }
     }
 

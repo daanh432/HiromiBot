@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PingCommand implements CommandInterface {
     @Override
-    public void Handle(List<String> args, GuildMessageReceivedEvent event) {
+    public void handle(List<String> args, GuildMessageReceivedEvent event) {
         long startTime = System.currentTimeMillis();
         event.getChannel().sendMessage("Pong!").queue(message -> {
             long finishTime = System.currentTimeMillis();
@@ -17,13 +17,13 @@ public class PingCommand implements CommandInterface {
     }
 
     @Override
-    public String GetHelp() {
+    public String getHelp() {
         return "Returns amount of time bot takes to contact the Discord API\n" +
-                "Usage: `" + Secrets.PREFIX + GetInvoke() + "`";
+                "Usage: `" + Secrets.PREFIX + getInvoke() + "`";
     }
 
     @Override
-    public String GetInvoke() {
+    public String getInvoke() {
         return "ping";
     }
 }
