@@ -16,7 +16,7 @@ public class Bot {
     private final Random randomGenerator = new Random();
 
     private Bot() {
-        CommandHandler commandHandler = new CommandHandler();
+        CommandHandler commandHandler = new CommandHandler(randomGenerator);
         Listener listener = new Listener(commandHandler);
 
         Logger LOGGER = LoggerFactory.getLogger(Bot.class);

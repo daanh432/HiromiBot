@@ -3,6 +3,9 @@ package nl.daanh.hiromibot;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.commands.HelpCommand;
 import nl.daanh.hiromibot.commands.PingCommand;
+import nl.daanh.hiromibot.commands.UserInformationCommand;
+import nl.daanh.hiromibot.commands.moderation.BanCommand;
+import nl.daanh.hiromibot.commands.moderation.KickCommand;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,9 +16,12 @@ public class CommandHandler {
 
     private final Map<String, CommandInterface> commands = new HashMap<>();
 
-    CommandHandler() {
+    CommandHandler(Random randomGenerator) {
         AddCommand(new HelpCommand(this));
         AddCommand(new PingCommand());
+        AddCommand(new UserInformationCommand());
+        AddCommand(new KickCommand());
+        AddCommand(new BanCommand());
     }
 
     private void AddCommand(CommandInterface command) {
