@@ -6,6 +6,7 @@ import nl.daanh.hiromibot.commands.PingCommand;
 import nl.daanh.hiromibot.commands.UserInformationCommand;
 import nl.daanh.hiromibot.commands.moderation.BanCommand;
 import nl.daanh.hiromibot.commands.moderation.KickCommand;
+import nl.daanh.hiromibot.commands.moderation.UnbanCommand;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +23,7 @@ public class CommandHandler {
         AddCommand(new UserInformationCommand());
         AddCommand(new KickCommand());
         AddCommand(new BanCommand());
+        AddCommand(new UnbanCommand());
     }
 
     private void AddCommand(CommandInterface command) {
