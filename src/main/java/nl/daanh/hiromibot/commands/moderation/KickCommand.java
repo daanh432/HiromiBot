@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Secrets;
+import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
 
 import java.util.List;
@@ -55,7 +55,7 @@ public class KickCommand implements CommandInterface {
 
     @Override
     public String getUsage() {
-        return "Usage: `" + Secrets.PREFIX + getInvoke() + "` [user name/@user mention/user id] <reason>";
+        return "Usage: `" + Constants.PREFIX + getInvoke() + "` [user name/@user mention/user id] <reason>";
     }
 
 

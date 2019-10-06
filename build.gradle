@@ -15,7 +15,7 @@ repositories {
     jcenter()
 }
 
-sourceCompatibility = targetCompatibility = 1.8
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
     compile group: 'net.dv8tion', name: 'JDA', version: '4.0.0_44'

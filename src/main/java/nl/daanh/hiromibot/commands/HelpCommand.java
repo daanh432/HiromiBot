@@ -4,8 +4,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.CommandHandler;
-import nl.daanh.hiromibot.Secrets;
+import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.utils.EmbedUtils;
 
 import java.util.List;
 
@@ -32,18 +33,32 @@ public class HelpCommand implements CommandInterface {
 
         if (command == null) {
             event.getChannel().sendMessage("This command doesn't exist\n" +
-                    "Use `" + Secrets.PREFIX + getInvoke() + "` for a list of commands").queue();
+                    "Use `" + Constants.PREFIX + getInvoke() + "` for a list of commands").queue();
             return;
         }
 
-        event.getChannel().sendMessage("Help for the command `" + command.getInvoke() + "`\n" + command.getHelp()).queue();
+        if (command.getInvoke() != null && command.getHelp() != null && command.getInvoke() != null) {
+            event.getChannel().sendMessage("Help for the command `" + command.getInvoke() + "`\n" + command.getHelp()).queue();
+        } else {
+            event.getChannel().sendMessage("This command exists but has an build error. Please report to bot author.").queue();
+        }
     }
 
     private EmbedBuilder GenerateEmbed() {
-        EmbedBuilder builder = new EmbedBuilder()
+        EmbedBuilder builder = EmbedUtils.defaultEmbed()
                 .setTitle("These are all my amazing commands!");
         StringBuilder descriptionBuilder = builder.getDescriptionBuilder();
-        commandHandler.GetCommands().forEach(command -> descriptionBuilder.append("`").append(command.getInvoke()).append("` - ").append(command.getHelp().split("\n")[0]).append("\n"));
+        for (CommandInterface command : commandHandler.GetCommands()) {
+            if (command != null && command.getHelp() != null && command.getInvoke() != null) {
+                String commandHelp = command.getHelp().split("\n")[0];
+                descriptionBuilder.append("`")
+                        .append(command.getInvoke())
+                        .append("` - ")
+                        .append(commandHelp)
+                        .append("\n");
+            }
+        }
+
         return builder;
     }
 
@@ -55,7 +70,7 @@ public class HelpCommand implements CommandInterface {
 
     @Override
     public String getUsage() {
-        return "Usage: `" + Secrets.PREFIX + getInvoke() + "` || `" + Secrets.PREFIX + getInvoke() + " command`";
+        return "Usage: `" + Constants.PREFIX + getInvoke() + "` || `" + Constants.PREFIX + getInvoke() + " command`";
     }
 
     @Override

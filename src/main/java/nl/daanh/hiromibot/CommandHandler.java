@@ -41,7 +41,7 @@ public class CommandHandler {
     }
 
     void HandleCommand(GuildMessageReceivedEvent event) {
-        final String[] splitMessage = event.getMessage().getContentRaw().replaceFirst("(?i)" + Pattern.quote(Secrets.PREFIX), "").split("\\s+");
+        final String[] splitMessage = event.getMessage().getContentRaw().replaceFirst("(?i)" + Pattern.quote(Constants.PREFIX), "").split("\\s+");
         final String command = splitMessage[0].toLowerCase();
 
         if (commands.containsKey(command)) {

@@ -27,7 +27,7 @@ public class Bot {
             LOGGER.info("Bot is starting...");
 
             JDA bot = new JDABuilder()
-                    .setToken(Secrets.TOKEN)
+                    .setToken(Constants.TOKEN)
                     .addEventListeners(listener)
                     .build().awaitReady();
 

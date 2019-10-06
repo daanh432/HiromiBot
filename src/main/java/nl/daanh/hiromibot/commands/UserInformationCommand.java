@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Secrets;
+import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 
@@ -51,7 +51,7 @@ public class UserInformationCommand implements CommandInterface {
 
     @Override
     public String getUsage() {
-        return "Usage: `" + Secrets.PREFIX + getInvoke() + " [user name/@user mention/user id]`";
+        return "Usage: `" + Constants.PREFIX + getInvoke() + " [user name/@user mention/user id]`";
     }
 
     @Override

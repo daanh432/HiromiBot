@@ -25,12 +25,12 @@ class Listener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        if (event.getAuthor().getIdLong() == Secrets.OWNER && event.getMessage().getContentRaw().equalsIgnoreCase(Secrets.PREFIX + "shutdown")) {
+        if (event.getAuthor().getIdLong() == Constants.OWNER && event.getMessage().getContentRaw().equalsIgnoreCase(Constants.PREFIX + "shutdown")) {
             shutdown(event.getJDA());
             return;
         }
 
-        if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage() || !event.getMessage().getContentRaw().toLowerCase().startsWith(Secrets.PREFIX))
+        if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage() || !event.getMessage().getContentRaw().toLowerCase().startsWith(Constants.PREFIX))
             return;
 
         commandHandler.HandleCommand(event);
