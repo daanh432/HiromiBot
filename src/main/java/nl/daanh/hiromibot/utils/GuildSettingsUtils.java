@@ -1,20 +1,21 @@
-package nl.daanh.hiromibot;
+package nl.daanh.hiromibot.utils;
 
 import net.dv8tion.jda.api.entities.Guild;
+import nl.daanh.hiromibot.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Properties;
 
-public class GuildSettings {
-    private Logger LOGGER = LoggerFactory.getLogger(GuildSettings.class);
+public class GuildSettingsUtils {
+    private Logger LOGGER = LoggerFactory.getLogger(GuildSettingsUtils.class);
     private File configFile;
     private String guildId;
     private String guildName;
     private Properties props;
 
-    public GuildSettings(Guild guild) {
+    public GuildSettingsUtils(Guild guild) {
         this.guildId = guild.getId();
         this.guildName = guild.getName();
         props = new Properties();

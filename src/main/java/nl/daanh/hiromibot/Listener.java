@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import nl.daanh.hiromibot.utils.GuildSettingsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +33,13 @@ class Listener extends ListenerAdapter {
             return;
         }
 
-        GuildSettings guildSettings = new GuildSettings(event.getGuild());
-        String prefix = guildSettings.getPrefix();
+        GuildSettingsUtils guildSettingsUtils = new GuildSettingsUtils(event.getGuild());
+        String prefix = guildSettingsUtils.getPrefix();
 
         if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage() || !(rawMessage.startsWith(Constants.PREFIX) || rawMessage.startsWith(prefix)))
             return;
 
-        commandHandler.HandleCommand(event, guildSettings);
+        commandHandler.HandleCommand(event, guildSettingsUtils);
     }
 
     private void shutdown(JDA jda) {
