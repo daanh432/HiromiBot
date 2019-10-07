@@ -11,3 +11,4 @@ gradle
 .idea
 
 /src/main/java/nl/daanh/hiromibot/Secrets.java
+/guildConfigs/
