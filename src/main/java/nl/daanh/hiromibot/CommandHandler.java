@@ -7,6 +7,7 @@ import nl.daanh.hiromibot.commands.UserInformationCommand;
 import nl.daanh.hiromibot.commands.moderation.BanCommand;
 import nl.daanh.hiromibot.commands.moderation.KickCommand;
 import nl.daanh.hiromibot.commands.moderation.UnbanCommand;
+import nl.daanh.hiromibot.commands.settings.SetPrefixCommand;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,6 +25,7 @@ public class CommandHandler {
         AddCommand(new KickCommand());
         AddCommand(new BanCommand());
         AddCommand(new UnbanCommand());
+        AddCommand(new SetPrefixCommand());
     }
 
     private void AddCommand(CommandInterface command) {
@@ -40,8 +42,8 @@ public class CommandHandler {
         return commands.values();
     }
 
-    void HandleCommand(GuildMessageReceivedEvent event) {
-        final String[] splitMessage = event.getMessage().getContentRaw().replaceFirst("(?i)" + Pattern.quote(Constants.PREFIX), "").split("\\s+");
+    void HandleCommand(GuildMessageReceivedEvent event, GuildSettings guildSettings) {
+        final String[] splitMessage = event.getMessage().getContentRaw().replaceFirst("(?i)" + Pattern.quote(Constants.PREFIX) + "|" + Pattern.quote(guildSettings.getPrefix()), "").split("\\s+");
         final String command = splitMessage[0].toLowerCase();
 
         if (commands.containsKey(command)) {
