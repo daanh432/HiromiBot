@@ -3,6 +3,7 @@ package nl.daanh.hiromibot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ public class Bot {
 
             JDA bot = new JDABuilder()
                     .setToken(Constants.TOKEN)
+                    .setActivity(Activity.listening("hi!help"))
                     .addEventListeners(listener)
                     .build().awaitReady();
 

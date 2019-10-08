@@ -6,8 +6,8 @@ import nl.daanh.hiromibot.commands.PingCommand;
 import nl.daanh.hiromibot.commands.UserInformationCommand;
 import nl.daanh.hiromibot.commands.moderation.BanCommand;
 import nl.daanh.hiromibot.commands.moderation.KickCommand;
+import nl.daanh.hiromibot.commands.moderation.SettingsCommand;
 import nl.daanh.hiromibot.commands.moderation.UnbanCommand;
-import nl.daanh.hiromibot.commands.settings.SetPrefixCommand;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.GuildSettingsUtils;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class CommandHandler {
         AddCommand(new KickCommand());
         AddCommand(new BanCommand());
         AddCommand(new UnbanCommand());
-        AddCommand(new SetPrefixCommand());
+        AddCommand(new SettingsCommand());
     }
 
     private void AddCommand(CommandInterface command) {
