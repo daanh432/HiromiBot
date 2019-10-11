@@ -7,13 +7,14 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.objects.DiscordBot;
 
 import java.util.List;
 
 public class KickCommand implements CommandInterface {
 
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
+    public void handle(List<String> args, GuildMessageReceivedEvent event, DiscordBot discordBot) {
         TextChannel channel = event.getChannel();
         Member member = event.getMember();
         Member selfMember = event.getGuild().getSelfMember();

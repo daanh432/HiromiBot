@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CommandInterface {
 
-    void handle(List<String> args, GuildMessageReceivedEvent event);
+    void handle(List<String> args, GuildMessageReceivedEvent event, DiscordBot discordBot);
 
     String getHelp();
 

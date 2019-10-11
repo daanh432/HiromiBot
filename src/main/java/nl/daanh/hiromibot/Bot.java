@@ -1,60 +1,39 @@
 package nl.daanh.hiromibot;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.objects.DiscordBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.login.LoginException;
-import java.awt.*;
-import java.time.Instant;
-import java.util.Random;
+import java.util.HashMap;
 
 public class Bot {
-    private final Random randomGenerator = new Random();
+    private static final Logger LOGGER = LoggerFactory.getLogger(Bot.class);
 
-    private Bot() {
-        CommandHandler commandHandler = new CommandHandler(randomGenerator);
-        Listener listener = new Listener(commandHandler);
-
-        Logger LOGGER = LoggerFactory.getLogger(Bot.class);
-
-        setEmbedTemplate();
-
-        try {
-            LOGGER.info("Bot is starting...");
-
-            JDA bot = new JDABuilder()
-                    .setToken(Constants.TOKEN)
-                    .setActivity(Activity.listening("hi!help"))
-                    .addEventListeners(listener)
-                    .build().awaitReady();
-
-            LOGGER.info("Bot has started on " + bot.getGuilds().size() + " guilds.");
-        } catch (LoginException | InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+    private static HashMap<String, String> arguments = new HashMap<>();
 
     public static void main(String[] args) {
-        new Bot();
+        LOGGER.info("Parsing arguments");
+        parseArguments(args);
+        LOGGER.info("Parsed arguments");
+        DiscordBot discordBot = new DiscordBot(arguments.getOrDefault("token", "NULL"));
     }
 
-    private void setEmbedTemplate() {
-        EmbedUtils.setEmbedBuilder(() -> new EmbedBuilder()
-                .setColor(getRandomColor())
-                .setFooter("Hiromi Bot", null)
-                .setTimestamp(Instant.now()));
-    }
-
-    private Color getRandomColor() {
-        float r = randomGenerator.nextFloat();
-        float g = randomGenerator.nextFloat();
-        float b = randomGenerator.nextFloat();
-
-        return new Color(r, g, b);
+    private static void parseArguments(String[] args) {
+        for (String arg : args) {
+            String[] parsedArg = arg.split(":");
+            if (parsedArg.length == 2) {
+                switch (parsedArg[0].toLowerCase()) {
+                    case "token":
+                    case "ipaddress":
+                    case "username":
+                    case "password":
+                    case "database":
+                        arguments.put(parsedArg[0].toLowerCase(), parsedArg[1]);
+                        break;
+                    default:
+                        System.out.println(String.format("Unknown argument %s", parsedArg[0]));
+                }
+            }
+        }
     }
 }

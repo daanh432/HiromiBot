@@ -10,6 +10,7 @@ import nl.daanh.hiromibot.commands.moderation.SettingsCommand;
 import nl.daanh.hiromibot.commands.moderation.UnbanCommand;
 import nl.daanh.hiromibot.commands.music.JoinVoiceChatCommand;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.objects.DiscordBot;
 import nl.daanh.hiromibot.utils.GuildSettingsUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,8 +20,10 @@ import java.util.regex.Pattern;
 public class CommandHandler {
 
     private final Map<String, CommandInterface> commands = new HashMap<>();
+    private DiscordBot discordBot = null;
 
-    CommandHandler(Random randomGenerator) {
+    public CommandHandler(Random randomGenerator, DiscordBot discordBot) {
+        this.discordBot = discordBot;
         AddCommand(new HelpCommand(this));
         AddCommand(new PingCommand());
         AddCommand(new UserInformationCommand());
@@ -52,7 +55,7 @@ public class CommandHandler {
         if (commands.containsKey(command)) {
             final List<String> args = Arrays.asList(splitMessage).subList(1, splitMessage.length);
 
-            commands.get(command).handle(args, event);
+            commands.get(command).handle(args, event, discordBot);
         }
     }
 
