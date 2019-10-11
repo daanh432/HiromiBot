@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
-import nl.daanh.hiromibot.objects.DiscordBot;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 
 import java.time.format.DateTimeFormatter;
@@ -30,7 +29,7 @@ public class UserInformationCommand implements CommandInterface {
     }
 
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event, DiscordBot discordBot) {
+    public void handle(List<String> args, GuildMessageReceivedEvent event) {
         String joinedArgs = String.join("", args);
         if (args.isEmpty() && event.getMember() != null) {
             event.getChannel().sendMessage(generateEmbed(event.getMember().getUser(), event.getMember())).queue();

@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 
-public class Listener extends ListenerAdapter {
+class Listener extends ListenerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
     private final CommandHandler commandHandler;
 
-    public Listener(CommandHandler commandHandler) {
+    Listener(CommandHandler commandHandler) {
         this.commandHandler = commandHandler;
     }
 

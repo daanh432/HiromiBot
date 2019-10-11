@@ -3,13 +3,12 @@ package nl.daanh.hiromibot.commands;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
-import nl.daanh.hiromibot.objects.DiscordBot;
 
 import java.util.List;
 
 public class PingCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event, DiscordBot discordBot) {
+    public void handle(List<String> args, GuildMessageReceivedEvent event) {
         long startTime = System.currentTimeMillis();
         event.getChannel().sendMessage("Pong!").queue(message -> {
             long finishTime = System.currentTimeMillis();

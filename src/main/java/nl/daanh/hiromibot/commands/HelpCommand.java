@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.CommandHandler;
 import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
-import nl.daanh.hiromibot.objects.DiscordBot;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public class HelpCommand implements CommandInterface {
     }
 
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event, DiscordBot discordBot) {
+    public void handle(List<String> args, GuildMessageReceivedEvent event) {
         if (args.isEmpty()) {
             if (event.getGuild().getSelfMember().hasPermission(event.getMessage().getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
                 event.getChannel().sendMessage(GenerateEmbed().build()).queue();

@@ -9,13 +9,12 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
-import nl.daanh.hiromibot.objects.DiscordBot;
 
 import java.util.List;
 
 public class JoinVoiceChatCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event, DiscordBot discordBot) {
+    public void handle(List<String> args, GuildMessageReceivedEvent event) {
         TextChannel textChannel = event.getChannel();
         AudioManager audioManager = event.getGuild().getAudioManager();
         Member member = event.getMember();
