@@ -9,6 +9,7 @@ import nl.daanh.hiromibot.commands.moderation.KickCommand;
 import nl.daanh.hiromibot.commands.moderation.SettingsCommand;
 import nl.daanh.hiromibot.commands.moderation.UnbanCommand;
 import nl.daanh.hiromibot.commands.music.JoinVoiceChatCommand;
+import nl.daanh.hiromibot.commands.music.LeaveVoiceChatCommand;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.GuildSettingsUtils;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,7 @@ public class CommandHandler {
         AddCommand(new UnbanCommand());
         AddCommand(new SettingsCommand());
         AddCommand(new JoinVoiceChatCommand());
+        AddCommand(new LeaveVoiceChatCommand());
     }
 
     private void AddCommand(CommandInterface command) {
