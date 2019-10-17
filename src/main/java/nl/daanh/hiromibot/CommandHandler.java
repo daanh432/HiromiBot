@@ -4,6 +4,10 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.commands.HelpCommand;
 import nl.daanh.hiromibot.commands.PingCommand;
 import nl.daanh.hiromibot.commands.UserInformationCommand;
+import nl.daanh.hiromibot.commands.fun.HugCommand;
+import nl.daanh.hiromibot.commands.fun.MemeCommand;
+import nl.daanh.hiromibot.commands.fun.MinecraftCommand;
+import nl.daanh.hiromibot.commands.fun.PatCommand;
 import nl.daanh.hiromibot.commands.moderation.BanCommand;
 import nl.daanh.hiromibot.commands.moderation.KickCommand;
 import nl.daanh.hiromibot.commands.moderation.SettingsCommand;
@@ -31,6 +35,10 @@ public class CommandHandler {
         AddCommand(new SettingsCommand());
         AddCommand(new JoinVoiceChatCommand());
         AddCommand(new LeaveVoiceChatCommand());
+        AddCommand(new MemeCommand());
+        AddCommand(new MinecraftCommand());
+        AddCommand(new HugCommand());
+        AddCommand(new PatCommand());
     }
 
     private void AddCommand(CommandInterface command) {
