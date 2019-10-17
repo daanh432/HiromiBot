@@ -16,7 +16,6 @@ public class LeaveVoiceChatCommand implements CommandInterface {
         TextChannel textChannel = event.getChannel();
         AudioManager audioManager = event.getGuild().getAudioManager();
         Member member = event.getMember();
-        Member selfMember = event.getGuild().getSelfMember();
 
         if (!audioManager.isConnected()) {
             textChannel.sendMessage("I'm not connected to a voice channel.").queue();
@@ -24,14 +23,14 @@ public class LeaveVoiceChatCommand implements CommandInterface {
         }
 
         VoiceChannel voiceChannel = audioManager.getConnectedChannel();
-        if (voiceChannel.getMembers().contains(member)) {
+        if (!voiceChannel.getMembers().contains(member)) {
             textChannel.sendMessage("You have to be in the voice channel to use this command.").queue();
             return;
         }
 
         String voiceChannelName = voiceChannel.getName();
         audioManager.closeAudioConnection();
-        textChannel.sendMessageFormat("Leaving the channel %s", voiceChannelName).queue();
+        textChannel.sendMessageFormat("Leaving the channel `%s`.", voiceChannelName).queue();
     }
 
     @Override
