@@ -21,6 +21,9 @@ dependencies {
     compile group: 'net.dv8tion', name: 'JDA', version: '4.0.0_44'
     compile group: 'com.jagrosh', name: 'jda-utilities', version: '3.0.1'
 
+    // https://github.com/sedmelluq/lavaplayer
+    compile group: 'com.sedmelluq', name: 'lavaplayer', version: '1.3.22'
+
     // https://mvnrepository.com/artifact/com.konghq/unirest-java
     compile group: 'com.konghq', name: 'unirest-java', version: '3.1.00'
 

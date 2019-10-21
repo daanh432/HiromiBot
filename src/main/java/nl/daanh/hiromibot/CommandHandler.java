@@ -12,8 +12,7 @@ import nl.daanh.hiromibot.commands.moderation.BanCommand;
 import nl.daanh.hiromibot.commands.moderation.KickCommand;
 import nl.daanh.hiromibot.commands.moderation.SettingsCommand;
 import nl.daanh.hiromibot.commands.moderation.UnbanCommand;
-import nl.daanh.hiromibot.commands.music.JoinVoiceChatCommand;
-import nl.daanh.hiromibot.commands.music.LeaveVoiceChatCommand;
+import nl.daanh.hiromibot.commands.music.*;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.GuildSettingsUtils;
 import org.jetbrains.annotations.NotNull;
@@ -26,19 +25,31 @@ public class CommandHandler {
     private final Map<String, CommandInterface> commands = new HashMap<>();
 
     CommandHandler(Random randomGenerator) {
+        // Other commands
         AddCommand(new HelpCommand(this));
-        AddCommand(new PingCommand());
         AddCommand(new UserInformationCommand());
+        AddCommand(new PingCommand());
+
+        // Moderation commands
+        AddCommand(new SettingsCommand());
         AddCommand(new KickCommand());
         AddCommand(new BanCommand());
         AddCommand(new UnbanCommand());
-        AddCommand(new SettingsCommand());
+
+        // Fun commands
+        AddCommand(new MemeCommand());
+        AddCommand(new PatCommand());
+        AddCommand(new HugCommand());
+        AddCommand(new MinecraftCommand());
+
+        // Music commands
         AddCommand(new JoinVoiceChatCommand());
         AddCommand(new LeaveVoiceChatCommand());
-        AddCommand(new MemeCommand());
-        AddCommand(new MinecraftCommand());
-        AddCommand(new HugCommand());
-        AddCommand(new PatCommand());
+        AddCommand(new PlayCommand());
+        AddCommand(new StopCommand());
+        AddCommand(new QueueCommand());
+        AddCommand(new SkipCommand());
+        AddCommand(new NowPlayingCommand());
     }
 
     private void AddCommand(CommandInterface command) {
