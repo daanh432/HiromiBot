@@ -18,7 +18,7 @@ public class Bot {
     private static final Logger LOGGER = LoggerFactory.getLogger(Bot.class);
     private static final CommandHandler commandHandler = new CommandHandler(RandomUtils.randomGenerator);
     private static final Listener listener = new Listener(commandHandler);
-    
+
     private Bot() {
         try {
             setEmbedTemplate();
