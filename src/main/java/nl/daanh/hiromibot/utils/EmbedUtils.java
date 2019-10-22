@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.util.function.Supplier;
 
 public class EmbedUtils {
@@ -84,6 +85,26 @@ public class EmbedUtils {
      */
     public static EmbedBuilder embedImage(String imageUrl, String title, String url) {
         return defaultEmbed().setImage(imageUrl).setTitle(title, url);
+    }
+
+    /**
+     * Send a music embed with a message and color
+     *
+     * @param message - Message to say
+     * @param success - Determines color of message
+     * @return The {@link EmbedBuilder}
+     */
+    public static EmbedBuilder defaultMusicEmbed(String message, Boolean success) {
+        EmbedBuilder embedBuilder = embedBuilderSupplier.get();
+        embedBuilder.setFooter("Music Powered By HiromiBot");
+        embedBuilder.setDescription(message);
+        if (success) {
+            embedBuilder.setColor(Color.decode("#679df5"));
+        } else {
+            embedBuilder.setColor(Color.decode("#f25757"));
+        }
+
+        return embedBuilder;
     }
 
     /**

@@ -1,6 +1,7 @@
 package nl.daanh.hiromibot;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -36,8 +37,14 @@ class Listener extends ListenerAdapter {
         GuildSettingsUtils guildSettingsUtils = new GuildSettingsUtils(event.getGuild());
         String prefix = guildSettingsUtils.getPrefix();
 
+        // Check sender and check if prefix was used
         if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage() || !(rawMessage.startsWith(Constants.PREFIX) || rawMessage.startsWith(prefix)))
             return;
+
+        // Check if bot has required permissions to be able to execute in this channel
+        if (!event.getGuild().getSelfMember().hasPermission(event.getChannel(), Permission.MESSAGE_WRITE))
+            return;
+
 
         commandHandler.HandleCommand(event, guildSettingsUtils);
     }

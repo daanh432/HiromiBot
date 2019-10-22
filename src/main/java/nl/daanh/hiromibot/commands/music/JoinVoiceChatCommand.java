@@ -22,7 +22,7 @@ public class JoinVoiceChatCommand implements CommandInterface {
 
         if (audioManager.isConnected()) {
             if (audioManager.getConnectedChannel() != null) {
-                textChannel.sendMessage(String.format("I'm already connected to %s.", audioManager.getConnectedChannel().getName())).queue();
+                textChannel.sendMessage(String.format("I'm already connected to `%s`.", audioManager.getConnectedChannel().getName())).queue();
                 return;
             }
 
@@ -40,13 +40,13 @@ public class JoinVoiceChatCommand implements CommandInterface {
 
                 VoiceChannel voiceChannel = memberVoiceState.getChannel();
 
-                if (selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT)) {
-                    textChannel.sendMessageFormat("I'm missing the permission voice connect to join %s", voiceChannel).queue();
+                if (!selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT)) {
+                    textChannel.sendMessageFormat("I'm missing the permission voice connect to join `%s`.", voiceChannel.getName()).queue();
                     return;
                 }
 
                 audioManager.openAudioConnection(voiceChannel);
-                textChannel.sendMessageFormat("Joining the voice channel %s", voiceChannel).queue();
+                textChannel.sendMessageFormat("Joining the voice channel `%s`.", voiceChannel.getName()).queue();
                 return;
             }
         }
