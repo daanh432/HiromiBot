@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import nl.daanh.hiromibot.utils.GuildSettingsUtils;
+import nl.daanh.hiromibot.utils.SettingsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +34,7 @@ class Listener extends ListenerAdapter {
             return;
         }
 
-        GuildSettingsUtils guildSettingsUtils = new GuildSettingsUtils(event.getGuild());
-        String prefix = guildSettingsUtils.getPrefix();
+        String prefix = SettingsUtil.getPrefix(event.getGuild().getIdLong());
 
         // Check sender and check if prefix was used
         if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage() || !(rawMessage.startsWith(Constants.PREFIX) || rawMessage.startsWith(prefix)))
@@ -46,7 +45,7 @@ class Listener extends ListenerAdapter {
             return;
 
 
-        commandHandler.HandleCommand(event, guildSettingsUtils);
+        commandHandler.HandleCommand(event);
     }
 
     private void shutdown(JDA jda) {

@@ -14,7 +14,7 @@ import nl.daanh.hiromibot.commands.moderation.SettingsCommand;
 import nl.daanh.hiromibot.commands.moderation.UnbanCommand;
 import nl.daanh.hiromibot.commands.music.*;
 import nl.daanh.hiromibot.objects.CommandInterface;
-import nl.daanh.hiromibot.utils.GuildSettingsUtils;
+import nl.daanh.hiromibot.utils.SettingsUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -66,8 +66,8 @@ public class CommandHandler {
         return commands.values();
     }
 
-    void HandleCommand(GuildMessageReceivedEvent event, GuildSettingsUtils guildSettingsUtils) {
-        final String[] splitMessage = event.getMessage().getContentRaw().replaceFirst("(?i)" + Pattern.quote(Constants.PREFIX) + "|" + Pattern.quote(guildSettingsUtils.getPrefix()), "").split("\\s+");
+    void HandleCommand(GuildMessageReceivedEvent event) {
+        final String[] splitMessage = event.getMessage().getContentRaw().replaceFirst("(?i)" + Pattern.quote(Constants.PREFIX) + "|" + Pattern.quote(SettingsUtil.getPrefix(event.getGuild().getIdLong())), "").split("\\s+");
         final String command = splitMessage[0].toLowerCase();
 
         if (commands.containsKey(command)) {

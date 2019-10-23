@@ -1,6 +1,7 @@
 package nl.daanh.hiromibot.utils;
 
 import kong.unirest.GetRequest;
+import kong.unirest.HttpRequestWithBody;
 import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 
@@ -28,7 +29,11 @@ public class WebUtils {
         return defaultRequest(url).asJson().getBody().getObject();
     }
 
-    public static JSONObject fetchJronFromUrlAuthorization(String url) {
+    static JSONObject fetchJsonFromUrlApi(String url) {
         return defaultApiRequest(url).asJson().getBody().getObject();
+    }
+
+    static HttpRequestWithBody postToUrlApi(String url) {
+        return Unirest.post(url).header("User-Agent", userAgent).header("Authorization", wolkeTokenHiromiApi);
     }
 }
