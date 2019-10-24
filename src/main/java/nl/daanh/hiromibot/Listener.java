@@ -34,10 +34,13 @@ class Listener extends ListenerAdapter {
             return;
         }
 
-        String prefix = SettingsUtil.getPrefix(event.getGuild().getIdLong());
+        // Check sender
+        if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage())
+            return;
 
-        // Check sender and check if prefix was used
-        if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage() || !(rawMessage.startsWith(Constants.PREFIX) || rawMessage.startsWith(prefix)))
+        // Check prefix
+        String prefix = rawMessage.startsWith(Constants.PREFIX) ? Constants.PREFIX : SettingsUtil.getPrefix(event.getGuild().getIdLong());
+        if (!(rawMessage.startsWith(Constants.PREFIX) || rawMessage.startsWith(prefix)))
             return;
 
         // Check if bot has required permissions to be able to execute in this channel
@@ -45,7 +48,7 @@ class Listener extends ListenerAdapter {
             return;
 
 
-        commandHandler.HandleCommand(event);
+        commandHandler.HandleCommand(event, prefix);
     }
 
     private void shutdown(JDA jda) {

@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.RandomUtils;
 
 import java.util.List;
 
@@ -23,14 +25,15 @@ public class LeaveVoiceChatCommand implements CommandInterface {
         }
 
         VoiceChannel voiceChannel = audioManager.getConnectedChannel();
-        if (!voiceChannel.getMembers().contains(member)) {
-            textChannel.sendMessage("You have to be in the voice channel to use this command.").queue();
+
+        if (voiceChannel == null || !RandomUtils.inSameVoiceChannel(event.getMember(), event.getGuild().getSelfMember())) {
+            textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("You have to be in the voice channel to use this command.", false).build()).queue();
             return;
         }
 
         String voiceChannelName = voiceChannel.getName();
         audioManager.closeAudioConnection();
-        textChannel.sendMessageFormat("Leaving the channel `%s`.", voiceChannelName).queue();
+        textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("Leaving the voice channel.", true).build()).queue();
     }
 
     @Override
@@ -40,7 +43,7 @@ public class LeaveVoiceChatCommand implements CommandInterface {
 
     @Override
     public String getUsage() {
-        return Constants.PREFIX + getInvoke();
+        return "Usage: `" + Constants.PREFIX + getInvoke() + "`";
     }
 
     @Override

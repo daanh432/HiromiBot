@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.RandomUtils;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.net.MalformedURLException;
@@ -16,14 +17,17 @@ public class PlayCommand implements CommandInterface {
     @Override
     public void handle(List<String> args, GuildMessageReceivedEvent event) {
         TextChannel textChannel = event.getChannel();
+        String input = String.join(" ", args);
 
-        if (args.isEmpty()) {
-            EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Please specify a url or song title you want me to play. %s", getUsage()), false);
-            textChannel.sendMessage(embedBuilder.build()).queue();
+        if (!RandomUtils.inSameVoiceChannel(event.getMember(), event.getGuild().getSelfMember())) {
+            textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("You have to be in the voice channel to add songs.", false).build()).queue();
             return;
         }
 
-        String input = String.join(" ", args);
+        if (args.isEmpty()) {
+            textChannel.sendMessage(EmbedUtils.defaultMusicEmbed(String.format("Please specify a url or song title you want me to play. %s", getUsage()), false).build()).queue();
+            return;
+        }
 
         if (!isUrl(input) && !input.startsWith("ytsearch:")) {
             // TODO Youtube API for search

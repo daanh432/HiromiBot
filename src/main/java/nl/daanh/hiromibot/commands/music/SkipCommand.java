@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.Constants;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.RandomUtils;
 import nl.daanh.hiromibot.utils.music.GuildMusicManager;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
 import nl.daanh.hiromibot.utils.music.TrackScheduler;
@@ -18,6 +19,12 @@ public class SkipCommand implements CommandInterface {
     @Override
     public void handle(List<String> args, GuildMessageReceivedEvent event) {
         TextChannel textChannel = event.getChannel();
+
+        if (!RandomUtils.inSameVoiceChannel(event.getMember(), event.getGuild().getSelfMember())) {
+            textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("You have to be in the voice channel to skip songs.", false).build()).queue();
+            return;
+        }
+
         PlayerManager playerManager = PlayerManager.getInstance();
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
         TrackScheduler scheduler = musicManager.scheduler;
@@ -28,15 +35,7 @@ public class SkipCommand implements CommandInterface {
             return;
         }
 
-        if (event.getMember() != null && event.getMember().getVoiceState() != null && event.getGuild().getSelfMember().getVoiceState() != null) {
-            if (event.getMember().getVoiceState().getChannel() != event.getGuild().getSelfMember().getVoiceState().getChannel()) {
-                textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("You have to be in the voice channel to skip songs..", false).build()).queue();
-                return;
-            }
-        }
-
         try {
-
             AudioTrackInfo previousTrack = player.getPlayingTrack().getInfo();
             scheduler.nextTrack();
 
