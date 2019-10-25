@@ -45,7 +45,7 @@ jobs:
           ./gradlew build
 
       - store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
-          path: build/libs/HiromiBot.jar
+          path: build/libs/
           when: always
 
       # run tests!
