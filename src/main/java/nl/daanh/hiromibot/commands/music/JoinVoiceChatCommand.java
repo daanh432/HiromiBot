@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
-import nl.daanh.hiromibot.Constants;
+import nl.daanh.hiromibot.Config;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 
@@ -66,7 +66,7 @@ public class JoinVoiceChatCommand implements CommandInterface {
 
     @Override
     public String getUsage() {
-        return "Usage: `" + Constants.PREFIX + getInvoke() + "`";
+        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "`";
     }
 
     @Override

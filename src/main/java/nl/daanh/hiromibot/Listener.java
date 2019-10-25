@@ -29,7 +29,7 @@ class Listener extends ListenerAdapter {
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         String rawMessage = event.getMessage().getContentRaw().toLowerCase();
 
-        if (event.getAuthor().getIdLong() == Constants.OWNER && rawMessage.equalsIgnoreCase(Constants.PREFIX + "shutdown")) {
+        if (event.getAuthor().getIdLong() == Config.getInstance().getLong("owner") && rawMessage.equalsIgnoreCase(Config.getInstance().getString("prefix") + "shutdown")) {
             shutdown(event.getJDA());
             return;
         }
@@ -39,8 +39,8 @@ class Listener extends ListenerAdapter {
             return;
 
         // Check prefix
-        String prefix = rawMessage.startsWith(Constants.PREFIX) ? Constants.PREFIX : SettingsUtil.getPrefix(event.getGuild().getIdLong());
-        if (!(rawMessage.startsWith(Constants.PREFIX) || rawMessage.startsWith(prefix)))
+        String prefix = rawMessage.startsWith(Config.getInstance().getString("prefix")) ? Config.getInstance().getString("prefix") : SettingsUtil.getPrefix(event.getGuild().getIdLong());
+        if (!(rawMessage.startsWith(Config.getInstance().getString("prefix")) || rawMessage.startsWith(prefix)))
             return;
 
         // Check if bot has required permissions to be able to execute in this channel

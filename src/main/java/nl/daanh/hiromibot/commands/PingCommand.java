@@ -1,7 +1,7 @@
 package nl.daanh.hiromibot.commands;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Constants;
+import nl.daanh.hiromibot.Config;
 import nl.daanh.hiromibot.objects.CommandInterface;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class PingCommand implements CommandInterface {
 
     @Override
     public String getUsage() {
-        return "Usage: `" + Constants.PREFIX + getInvoke() + "`";
+        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "`";
     }
 
     @Override

@@ -12,31 +12,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 
 public class Bot {
     private static final Logger LOGGER = LoggerFactory.getLogger(Bot.class);
-    private static final CommandHandler commandHandler = new CommandHandler(RandomUtils.randomGenerator);
-    private static final Listener listener = new Listener(commandHandler);
 
     private Bot() {
         try {
+            // Load config file
+            final Config config = new Config(new File("settings.json"));
+
+            final CommandHandler commandHandler = new CommandHandler(RandomUtils.randomGenerator);
+            final Listener listener = new Listener(commandHandler);
+
+            // Set utils
             setEmbedTemplate();
             setUnirestSettings();
 
+            // Start JDA
             JDA discordBot = new JDABuilder()
-                    .setToken(Constants.TOKEN)
-                    .setActivity(Activity.listening("hi!help"))
+                    .setToken(config.getString("token"))
+                    .setActivity(Activity.listening(config.getString("activity")))
                     .addEventListeners(listener)
                     .build().awaitReady();
 
             LOGGER.info("Bot has started on " + discordBot.getGuilds().size() + " guilds.");
-        } catch (LoginException | InterruptedException e) {
+        } catch (LoginException | InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new Bot();
     }
 

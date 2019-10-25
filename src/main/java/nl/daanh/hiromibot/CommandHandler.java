@@ -24,31 +24,38 @@ public class CommandHandler {
     private final Map<String, CommandInterface> commands = new HashMap<>();
 
     CommandHandler(Random randomGenerator) {
+        Config config = Config.getInstance();
         // Other commands
         AddCommand(new HelpCommand(this));
         AddCommand(new UserInformationCommand());
         AddCommand(new PingCommand());
 
         // Moderation commands
-        AddCommand(new SettingsCommand());
-        AddCommand(new KickCommand());
-        AddCommand(new BanCommand());
-        AddCommand(new UnbanCommand());
+        if (config.getBoolean("loadModerationCommands")) {
+            AddCommand(new SettingsCommand());
+            AddCommand(new KickCommand());
+            AddCommand(new BanCommand());
+            AddCommand(new UnbanCommand());
+        }
 
         // Fun commands
-        AddCommand(new MemeCommand());
-        AddCommand(new PatCommand());
-        AddCommand(new HugCommand());
-        AddCommand(new MinecraftCommand());
+        if (config.getBoolean("loadFunCommands")) {
+            AddCommand(new MemeCommand());
+            AddCommand(new PatCommand());
+            AddCommand(new HugCommand());
+            AddCommand(new MinecraftCommand());
+        }
 
         // Music commands
-        AddCommand(new JoinVoiceChatCommand());
-        AddCommand(new LeaveVoiceChatCommand());
-        AddCommand(new PlayCommand());
-        AddCommand(new StopCommand());
-        AddCommand(new QueueCommand());
-        AddCommand(new SkipCommand());
-        AddCommand(new NowPlayingCommand());
+        if (config.getBoolean("loadMusicCommands")) {
+            AddCommand(new JoinVoiceChatCommand());
+            AddCommand(new LeaveVoiceChatCommand());
+            AddCommand(new PlayCommand());
+            AddCommand(new StopCommand());
+            AddCommand(new QueueCommand());
+            AddCommand(new SkipCommand());
+            AddCommand(new NowPlayingCommand());
+        }
     }
 
     private void AddCommand(CommandInterface command) {

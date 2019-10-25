@@ -3,7 +3,7 @@ package nl.daanh.hiromibot.commands.music;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Constants;
+import nl.daanh.hiromibot.Config;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
@@ -56,7 +56,7 @@ public class PlayCommand implements CommandInterface {
 
     @Override
     public String getUsage() {
-        return "Usage: `" + Constants.PREFIX + getInvoke() + " [url, playlist url]`";
+        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + " [url, playlist url]`";
     }
 
     @Override

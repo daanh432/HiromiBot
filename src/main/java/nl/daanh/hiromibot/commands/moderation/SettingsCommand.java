@@ -3,7 +3,7 @@ package nl.daanh.hiromibot.commands.moderation;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Constants;
+import nl.daanh.hiromibot.Config;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.SettingsUtil;
 
@@ -64,7 +64,7 @@ public class SettingsCommand implements CommandInterface {
 
     @Override
     public String getUsage() {
-        return "Usage: `" + Constants.PREFIX + getInvoke() + "`";
+        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "`";
     }
 
     @Override

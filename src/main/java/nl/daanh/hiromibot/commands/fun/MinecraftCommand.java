@@ -5,7 +5,7 @@ import kong.unirest.json.JSONObject;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Constants;
+import nl.daanh.hiromibot.Config;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.WebUtils;
@@ -56,7 +56,7 @@ public class MinecraftCommand implements CommandInterface {
 
     @Override
     public String getUsage() {
-        return "Usage: `" + Constants.PREFIX + getInvoke() + " <minecraft username>`";
+        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + " <minecraft username>`";
     }
 
     @Override
