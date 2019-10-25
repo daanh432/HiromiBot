@@ -16,7 +16,7 @@ public class SettingsUtil {
     private static final HashMap<Long, JSONObject> settingsCache = new HashMap<>();
 
     private static String getGuildUrl(Long guildId) {
-        return String.format("http://hiromiapi.test/api/v1/settings/%s/guilds", guildId.toString());
+        return String.format("https://hiromi_api.daanh.nl/api/v1/settings/%s/guilds", guildId.toString());
     }
 
     private static String getDefaultSetting(String key) {
