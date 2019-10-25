@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:11-jdk
+      - image: circleci/openjdk:11.0.3-jdk
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -45,12 +45,8 @@ jobs:
           ./gradlew build
 
       - store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
-          path: build/artifcats/HiromiBot_jar
+          path: build/libs/HiromiBot.jar
           when: always
-
-      - run: |
-          sudo chmod +x gradlew
-          ./gradlew assemble
 
       # run tests!
       - run: |
