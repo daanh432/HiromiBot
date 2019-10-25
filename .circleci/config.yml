@@ -44,6 +44,14 @@ jobs:
           sudo chmod +x gradlew
           ./gradlew build
 
+      - store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+          path: build/artifcats/HiromiBot_jar
+          when: always
+
+      - run: |
+          sudo chmod +x gradlew
+          ./gradlew assemble
+
       # run tests!
       - run: |
           sudo chmod +x gradlew
