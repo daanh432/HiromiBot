@@ -1,0 +1,10 @@
+{
+  "prefix": "hi!",
+  "activity": "hi!help",
+  "token": "Discord Bot Token",
+  "apitoken": "Hiromi API Token",
+  "owner": 0,
+  "loadMusicCommands": true,
+  "loadModerationCommands": true,
+  "loadFunCommands": true
+}
