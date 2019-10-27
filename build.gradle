@@ -24,7 +24,6 @@ jar {
 
 shadowJar {
     baseName = 'HiromiBot'
-    minimize()
     version = null
 }
 
