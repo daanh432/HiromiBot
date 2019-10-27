@@ -17,47 +17,35 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-```
-Give examples
-```
+#### Java 11
+Go to the [OpenJDK Archive](https://jdk.java.net/archive/) and look for Java version 1.11.2.
+
+#### Discord Bot Token
+- To get a Discord Bot token go to your [Developer Portal](https://discordapp.com/developers/applications).
+- Click on ``New Application``, enter a name.
+- Fill in the information on the ``General Information`` page.
+- Go to the ``Bot`` page and click on ``Add Bot``.
+- On this page you'll see the token. Later on you can copy the Discord Bot Token from this page.
+
+#### Hiromi API Token
+- WIP
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
+- Clone this repository ``git clone https://github.com/daanh432/HiromiBot.git``
+- Enter the directory ``cd HiromiBot``
+- Copy the ``settings.json.example`` to ``settings.json`` and fill in the values.
+- Execute ``./gradlew run`` 
 
 ```
-until finished
+INFO   Default embed template has been set.
+INFO   Login Successful!
+INFO   Connected to WebSocket
+INFO   Finished Loading!
+INFO   BotName#1234 is ready
+INFO   Bot has started on X guilds.
 ```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
+Do you get a similiar output to this above? Congratulations, you've succesfully set up your local development enviorment.
 
 ## Deployment
 
