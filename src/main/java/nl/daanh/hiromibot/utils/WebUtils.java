@@ -1,18 +1,25 @@
 package nl.daanh.hiromibot.utils;
 
-import kong.unirest.*;
-import kong.unirest.json.JSONObject;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.Objects;
 
 public class WebUtils {
+    public static OkHttpClient client = new OkHttpClient();
+
     private static String userAgent = "";
     private static String hiromiApiToken = "";
 
-    private static GetRequest defaultRequest(String url) {
-        return Unirest.get(url).header("User-Agent", userAgent);
+    private static Request.Builder defaultRequest(String url) {
+        return new Request.Builder().url(url).addHeader("User-Agent", userAgent);
     }
 
-    private static GetRequest defaultApiRequest(String url) {
-        return Unirest.get(url).header("User-Agent", userAgent).header("Authorization", hiromiApiToken);
+    private static Request.Builder defaultApiRequest(String url) {
+        return new Request.Builder().url(url).addHeader("User-Agent", userAgent).addHeader("Authorization", hiromiApiToken);
     }
 
     public static void setUserAgent(String userAgent) {
@@ -24,24 +31,36 @@ public class WebUtils {
     }
 
     public static JSONObject fetchJsonFromUrl(String url) {
-        return defaultRequest(url).asJson().getBody().getObject();
-    }
-
-    static JSONObject fetchJsonFromUrlApi(String url) {
-        HttpResponse<JsonNode> jsonResponse = defaultApiRequest(url).asJson();
-        if (jsonResponse.getStatus() == 200) {
-            return jsonResponse.getBody().getObject();
-        } else if (jsonResponse.getStatus() == 401) {
-            throw new HiromiApiAuthException();
-        } else if (jsonResponse.getStatus() == 429) {
-            return new JSONObject().put("status", 429);
-        } else {
-            throw new HiromiApiException();
+        Request request = defaultRequest(url).build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.body() != null) {
+                return new JSONObject(Objects.requireNonNull(response.body()).string());
+            }
+            throw new RuntimeException("Empty json body");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    static HttpRequestWithBody postToUrlApi(String url) {
-        return Unirest.post(url).header("User-Agent", userAgent).header("Authorization", hiromiApiToken);
+    static JSONObject fetchJsonFromUrlApi(String url) {
+        Request request = defaultApiRequest(url).build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.code() == 200 && response.body() != null) {
+                return new JSONObject(Objects.requireNonNull(response.body()).string());
+            } else if (response.code() == 401) {
+                throw new HiromiApiAuthException();
+            } else if (response.code() == 429) {
+                return new JSONObject().put("status", 429);
+            } else {
+                throw new HiromiApiException();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static Request.Builder postToUrlApi(String url) {
+        return new Request.Builder().url(url).addHeader("User-Agent", userAgent).addHeader("Authorization", hiromiApiToken);
     }
 }
 

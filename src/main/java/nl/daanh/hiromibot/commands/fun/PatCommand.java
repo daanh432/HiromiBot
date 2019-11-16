@@ -1,7 +1,6 @@
 package nl.daanh.hiromibot.commands.fun;
 
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
-import kong.unirest.json.JSONObject;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -10,6 +9,7 @@ import nl.daanh.hiromibot.Config;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.WebUtils;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class PatCommand implements CommandInterface {
         TextChannel textChannel = event.getChannel();
         Member member = event.getMember();
 
-        if (args.isEmpty()) {
+        if (args.isEmpty() || member == null) {
             textChannel.sendMessage("Who do you want to pat? " + getUsage()).queue();
             return;
         }
@@ -33,10 +33,15 @@ public class PatCommand implements CommandInterface {
             }
 
             List<Member> foundMembers = FinderUtil.findMembers(String.join(" ", args), event.getGuild());
-            String patTitle = String.format("UwU! %s pats %s", member.getAsMention(), foundMembers.get(0).getAsMention());
-            EmbedBuilder embedBuilder = EmbedUtils.embedImage(jsonResponse.getString("link"));
-            embedBuilder.setDescription(patTitle);
-            textChannel.sendMessage(embedBuilder.build()).queue();
+            if (foundMembers.size() >= 1) {
+                String patTitle = String.format("UwU! %s pats %s", member.getAsMention(), foundMembers.get(0).getAsMention());
+                EmbedBuilder embedBuilder = EmbedUtils.embedImage(jsonResponse.getString("link"));
+                embedBuilder.setDescription(patTitle);
+                textChannel.sendMessage(embedBuilder.build()).queue();
+                return;
+            }
+
+            textChannel.sendMessage("Oh no. The person you're trying to pat is out of my reach! ^-^").queue();
         } catch (Exception e) {
             textChannel.sendMessage(errorMessage).queue();
         }

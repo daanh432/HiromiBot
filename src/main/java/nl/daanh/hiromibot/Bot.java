@@ -1,10 +1,9 @@
 package nl.daanh.hiromibot;
 
-import kong.unirest.Unirest;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
 import nl.daanh.hiromibot.utils.WebUtils;
@@ -29,28 +28,29 @@ public class Bot {
 
             // Set utils
             setEmbedTemplate();
-            setUnirestSettings();
+            setUnirestSettings(config);
 
-            // Start JDA
-            JDA discordBot = new JDABuilder()
-                    .setToken(config.getString("token"))
-                    .setActivity(Activity.listening(config.getString("activity")))
-                    .addEventListeners(listener)
-                    .build().awaitReady();
+            // Build JDA
+            DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder();
+            shardManagerBuilder.setToken(config.getString("token"));
+            shardManagerBuilder.setActivity(Activity.listening(config.getString("activity")));
+            shardManagerBuilder.addEventListeners(listener);
 
-            LOGGER.info("Bot has started on " + discordBot.getGuilds().size() + " guilds.");
-        } catch (LoginException | InterruptedException | IOException e) {
+            ShardManager shardManager = shardManagerBuilder.build();
+
+            LOGGER.info("Bot has started with " + shardManager.getShards().size() + " shards on " + shardManager.getGuilds().size() + " guilds.");
+        } catch (LoginException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new Bot();
     }
 
-    private void setUnirestSettings() {
-        Unirest.config().enableCookieManagement(false);
+    private void setUnirestSettings(Config config) {
         WebUtils.setUserAgent("HiromiBot / 1.0.0 / Open Source Discord Bot");
+        WebUtils.setHiromiApiToken(config.getString("apitoken"));
     }
 
     private void setEmbedTemplate() {

@@ -1,12 +1,14 @@
 package nl.daanh.hiromibot.utils;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.MultipartBody;
-import kong.unirest.json.JSONObject;
+import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 
@@ -16,7 +18,7 @@ public class SettingsUtil {
     private static final HashMap<Long, JSONObject> settingsCache = new HashMap<>();
 
     private static String getGuildUrl(Long guildId) {
-        return String.format("https://hiromi_api.daanh.nl/api/v1/settings/%s/guilds", guildId.toString());
+        return String.format("https://hiromi.daanh.nl/api/v1/settings/%s/guilds", guildId.toString());
     }
 
     private static String getDefaultSetting(String key) {
@@ -26,6 +28,8 @@ public class SettingsUtil {
                 return "hi!";
             case "musicEnabled":
                 return "false";
+            case "funEnabled":
+                return "true";
             default:
                 return String.format("NO_DEFAULT_VALUE_FOR_%s", key.toUpperCase());
         }
@@ -43,24 +47,31 @@ public class SettingsUtil {
 
     private static void writeKey(Long guildId, String key, String value) {
         // Store new setting in the API to retain settings on reboot
-        MultipartBody request = WebUtils.postToUrlApi(getGuildUrl(guildId))
-                .field("id", guildId.toString())
-                .field("setting", key)
-                .field("value", value);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("id", guildId.toString())
+                .addFormDataPart("setting", key)
+                .addFormDataPart("value", value)
+                .build();
+        Request.Builder request = WebUtils.postToUrlApi(getGuildUrl(guildId));
+        request.post(requestBody);
 
-        HttpResponse<JsonNode> response = request.asJson();
-
-        if (response.getStatus() == 200) {
-            // Save new setting in cache immediately to instantly let settings take effect.
-            if (settingsCache.containsKey(guildId)) {
-                JSONObject cachedSettings = settingsCache.get(guildId);
-                cachedSettings.getJSONObject("data").put(key, value);
-                settingsCache.put(guildId, cachedSettings);
+        try (Response response = WebUtils.client.newCall(request.build()).execute()) {
+            if (response.code() == 201) {
+                // Save new setting in cache immediately to instantly let settings take effect.
+                if (settingsCache.containsKey(guildId)) {
+                    JSONObject cachedSettings = settingsCache.get(guildId);
+                    cachedSettings.put("local_expires_at", Instant.now().getEpochSecond() + EXPIRES_IN); // Expire in X seconds from now
+                    cachedSettings.getJSONObject("data").put(key, value);
+                    settingsCache.put(guildId, cachedSettings);
+                }
+            } else if (response.code() == 401) {
+                throw new HiromiApiAuthException();
+            } else if (response.code() == 429) {
+                throw new HiromiApiTooManyRequestsException();
             }
-        } else if (response.getStatus() == 401) {
-            throw new HiromiApiAuthException();
-        } else if (response.getStatus() == 429) {
-            throw new HiromiApiTooManyRequestsException();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -68,9 +79,7 @@ public class SettingsUtil {
         // Check if guild settings are cached and not expired if not then it returns the value straight from the cache
         if (settingsCache.containsKey(guildId)) {
             JSONObject guildCache = settingsCache.get(guildId);
-
-            if (guildCache.has("local_expires_at") &&
-                    guildCache.has("data")) {
+            if (guildCache.has("local_expires_at") && guildCache.has("data")) {
                 if (guildCache.getLong("local_expires_at") > Instant.now().getEpochSecond()) {
                     JSONObject guildSettingsCache = guildCache.getJSONObject("data");
                     if (guildSettingsCache.has(key)) {
@@ -109,5 +118,14 @@ public class SettingsUtil {
 
     public static void setMusicEnabled(Long guildId, Boolean musicEnabled) {
         writeKey(guildId, "musicEnabled", musicEnabled ? "true" : "false");
+    }
+
+    public static Boolean getFunEnabled(Long guildId) {
+        String funEnabled = getKey(guildId, "funEnabled").toLowerCase();
+        return funEnabled.equals("on") || funEnabled.equals("true") || funEnabled.equals("enabled") || funEnabled.equals("1") || funEnabled.equals("enable");
+    }
+
+    public static void setFunEnabled(Long guildId, Boolean funEnabled) {
+        writeKey(guildId, "funEnabled", funEnabled ? "true" : "false");
     }
 }
