@@ -22,6 +22,11 @@ public class PlayCommand implements CommandInterface {
         Member selfMember = ctx.getSelfMember();
         String input = String.join(" ", args);
 
+        if (selfMember.getVoiceState() != null && !selfMember.getVoiceState().inVoiceChannel()) {
+            channel.sendMessage(EmbedUtils.defaultMusicEmbed("Well. If you want me to play music you are going to have to let me join your channel.", false).build()).queue();
+            return;
+        }
+
         if (!RandomUtils.inSameVoiceChannel(member, selfMember)
                 && selfMember.getVoiceState() != null
                 && selfMember.getVoiceState().inVoiceChannel()) {
