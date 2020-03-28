@@ -3,9 +3,10 @@ package nl.daanh.hiromibot.commands.music;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
@@ -13,24 +14,25 @@ import nl.daanh.hiromibot.utils.music.GuildMusicManager;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
 import nl.daanh.hiromibot.utils.music.TrackScheduler;
 
-import java.util.List;
-
 public class SkipCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
-        TextChannel textChannel = event.getChannel();
+    public void handle(CommandContext ctx) {
+        TextChannel textChannel = ctx.getChannel();
+        Guild guild = ctx.getGuild();
+        Member member = ctx.getMember();
+        Member selfMember = ctx.getSelfMember();
 
-        if (!RandomUtils.inSameVoiceChannel(event.getMember(), event.getGuild().getSelfMember())) {
+        if (!RandomUtils.inSameVoiceChannel(member, selfMember)) {
             textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("You have to be in the voice channel to skip songs.", false).build()).queue();
             return;
         }
 
         PlayerManager playerManager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
+        GuildMusicManager musicManager = playerManager.getGuildMusicManager(guild);
         TrackScheduler scheduler = musicManager.scheduler;
         AudioPlayer player = musicManager.player;
 
-        if (player.getPlayingTrack() == null || event.getGuild().getSelfMember().getVoiceState() == null || !event.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
+        if (player.getPlayingTrack() == null || selfMember.getVoiceState() == null || !selfMember.getVoiceState().inVoiceChannel()) {
             textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("It doesn't look like I'm playing any music.", false).build()).queue();
             return;
         }
@@ -50,12 +52,13 @@ public class SkipCommand implements CommandInterface {
 
     @Override
     public String getHelp() {
-        return "Skips the current playing song.";
+        return "Skips the current playing song.\n" +
+                "Usage: ``skip``";
     }
 
     @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "`";
+    public CATEGORY getCategory() {
+        return CATEGORY.MUSIC;
     }
 
     @Override

@@ -3,9 +3,9 @@ package nl.daanh.hiromibot.commands.music;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.music.GuildMusicManager;
@@ -18,10 +18,12 @@ import java.util.concurrent.TimeUnit;
 
 public class QueueCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
-        TextChannel textChannel = event.getChannel();
+    public void handle(CommandContext ctx) {
+        List<String> args = ctx.getArgs();
+        TextChannel textChannel = ctx.getChannel();
+        Guild guild = ctx.getGuild();
         PlayerManager playerManager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
+        GuildMusicManager musicManager = playerManager.getGuildMusicManager(guild);
         BlockingQueue<AudioTrack> queue = musicManager.scheduler.getQueue();
 
         if (queue.isEmpty()) {
@@ -79,13 +81,22 @@ public class QueueCommand implements CommandInterface {
         return "Shows the songs that are in queue to be played.";
     }
 
-    @Override
     public String getUsage() {
-        return "Usage `" + Config.getInstance().getString("prefix") + getInvoke() + "`";
+        return "Usage: ``queue <page number>``";
+    }
+
+    @Override
+    public CATEGORY getCategory() {
+        return CATEGORY.MUSIC;
     }
 
     @Override
     public String getInvoke() {
         return "queue";
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return List.of("schedule");
     }
 }

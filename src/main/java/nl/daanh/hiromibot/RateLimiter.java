@@ -12,7 +12,7 @@ import java.util.TimerTask;
 
 class RateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiter.class);
-    private static final Integer timeBetweenMessages = 5; // 5 seconds
+    private static final Integer timeBetweenMessages = 2; // 2 seconds
     private static final HashMap<Long, RateLimitObject> buffer = new HashMap<>();
 
     private static long CurrentTime() {

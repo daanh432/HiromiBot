@@ -1,80 +1,68 @@
 package nl.daanh.hiromibot.commands;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.CommandHandler;
-import nl.daanh.hiromibot.Config;
+import net.dv8tion.jda.api.entities.TextChannel;
+import nl.daanh.hiromibot.CommandManager;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
-import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.SettingsUtil;
 
 import java.util.List;
 
 public class HelpCommand implements CommandInterface {
+    private final CommandManager commandManager;
 
-    private CommandHandler commandHandler;
-
-    public HelpCommand(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public HelpCommand(CommandManager commandManager) {
+        this.commandManager = commandManager;
     }
 
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
+    public void handle(CommandContext ctx) {
+        List<String> args = ctx.getArgs();
+        Long guildId = ctx.getGuild().getIdLong();
+        TextChannel channel = ctx.getChannel();
+
         if (args.isEmpty()) {
-            if (event.getGuild().getSelfMember().hasPermission(event.getMessage().getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
-                event.getChannel().sendMessage(GenerateEmbed().build()).queue();
-            } else {
-                event.getChannel().sendMessage("It looks like I don't have permission to send embeds O.O").queue();
-            }
+            StringBuilder builder = new StringBuilder();
+            builder.append("List of commands:\n");
+            commandManager.getCommands().stream().map(CommandInterface::getInvoke).forEach(
+                    (it) -> builder.append("`")
+                            .append(SettingsUtil.getPrefix(guildId))
+                            .append(it).append("`\n")
+            );
+            channel.sendMessage(builder.toString()).queue();
             return;
         }
 
-        CommandInterface command = commandHandler.GetCommand(String.join("", args));
+        String invoke = args.get(0);
+
+        CommandInterface command = commandManager.getCommand(invoke);
 
         if (command == null) {
-            event.getChannel().sendMessage("This command doesn't exist\n" +
-                    "Use `" + Config.getInstance().getString("prefix") + getInvoke() + "` for a list of commands").queue();
+            channel.sendMessage("Oh oh.. It looks like the command " + invoke + " doesn't exist!").queue();
             return;
         }
 
-        if (command.getInvoke() != null && command.getHelp() != null && command.getInvoke() != null) {
-            event.getChannel().sendMessage("Help for the command `" + command.getInvoke() + "`\n" + command.getHelp()).queue();
-        } else {
-            event.getChannel().sendMessage("This command exists but has an build error. Please report to bot author.").queue();
-        }
-    }
-
-    private EmbedBuilder GenerateEmbed() {
-        EmbedBuilder builder = EmbedUtils.defaultEmbed()
-                .setTitle("These are all my amazing commands!");
-        StringBuilder descriptionBuilder = builder.getDescriptionBuilder();
-        for (CommandInterface command : commandHandler.GetCommands()) {
-            if (command != null && command.getHelp() != null && command.getInvoke() != null) {
-                String commandHelp = command.getHelp().split("\n")[0];
-                descriptionBuilder.append("`")
-                        .append(command.getInvoke())
-                        .append("` - ")
-                        .append(commandHelp)
-                        .append("\n");
-            }
-        }
-
-        return builder;
+        channel.sendMessage(command.getHelp()).queue();
     }
 
     @Override
-    public String getHelp() {
-        return "Show help information about all commands\n" +
-                getUsage();
-    }
-
-    @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "` || `" + Config.getInstance().getString("prefix") + getInvoke() + " command`";
+    public CATEGORY getCategory() {
+        return CATEGORY.OTHER;
     }
 
     @Override
     public String getInvoke() {
         return "help";
+    }
+
+    @Override
+    public String getHelp() {
+        return "Shows the list of available commands\n" +
+                "Usage: ``help <command>``";
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return List.of("commands", "commandlist");
     }
 }

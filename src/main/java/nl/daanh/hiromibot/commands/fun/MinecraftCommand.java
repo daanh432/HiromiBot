@@ -2,8 +2,7 @@ package nl.daanh.hiromibot.commands.fun;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.WebUtils;
@@ -14,11 +13,13 @@ import java.util.List;
 
 public class MinecraftCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
+    public void handle(CommandContext ctx) {
         String errorMessage = "Dang it. Couldn't find a history of this user.";
-        TextChannel textChannel = event.getChannel();
+        TextChannel textChannel = ctx.getChannel();
+        List<String> args = ctx.getArgs();
+
         if (args.isEmpty()) {
-            textChannel.sendMessage("Arguments missing. " + getUsage()).queue();
+            textChannel.sendMessage("Arguments missing.\n" + this.getHelp()).queue();
             return;
         }
 
@@ -51,16 +52,22 @@ public class MinecraftCommand implements CommandInterface {
 
     @Override
     public String getHelp() {
-        return "Tells you the history about a minecraft user";
-    }
-
-    @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + " <minecraft username>`";
+        return "Tells you the history about a minecraft user\n" +
+                "Usage: ``minecraft <minecraft username>``";
     }
 
     @Override
     public String getInvoke() {
         return "minecraft";
+    }
+
+    @Override
+    public CATEGORY getCategory() {
+        return CATEGORY.FUN;
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return List.of("mc");
     }
 }

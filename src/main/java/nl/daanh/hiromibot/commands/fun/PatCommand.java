@@ -2,10 +2,10 @@ package nl.daanh.hiromibot.commands.fun;
 
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.WebUtils;
@@ -15,13 +15,15 @@ import java.util.List;
 
 public class PatCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
+    public void handle(CommandContext ctx) {
         String errorMessage = "Oh no. It looks like something went wrong when I tried to pat that person for you. >.<";
-        TextChannel textChannel = event.getChannel();
-        Member member = event.getMember();
+        TextChannel textChannel = ctx.getChannel();
+        Member member = ctx.getMember();
+        Guild guild = ctx.getGuild();
+        List<String> args = ctx.getArgs();
 
         if (args.isEmpty() || member == null) {
-            textChannel.sendMessage("Who do you want to pat? " + getUsage()).queue();
+            textChannel.sendMessage(this.getHelp()).queue();
             return;
         }
 
@@ -32,7 +34,7 @@ public class PatCommand implements CommandInterface {
                 return;
             }
 
-            List<Member> foundMembers = FinderUtil.findMembers(String.join(" ", args), event.getGuild());
+            List<Member> foundMembers = FinderUtil.findMembers(String.join(" ", args), guild);
             if (foundMembers.size() >= 1) {
                 String patTitle = String.format("UwU! %s pats %s", member.getAsMention(), foundMembers.get(0).getAsMention());
                 EmbedBuilder embedBuilder = EmbedUtils.embedImage(jsonResponse.getString("link"));
@@ -49,12 +51,13 @@ public class PatCommand implements CommandInterface {
 
     @Override
     public String getHelp() {
-        return "Pat someone! Sends a patting gif";
+        return "Ohh yeah! Pat anyone you like! (Sends a patting gif)\n" +
+                "Usage: ``pat [username|mention|id]``";
     }
 
     @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + " [user name/@user mention/user id]`";
+    public CATEGORY getCategory() {
+        return CATEGORY.FUN;
     }
 
     @Override

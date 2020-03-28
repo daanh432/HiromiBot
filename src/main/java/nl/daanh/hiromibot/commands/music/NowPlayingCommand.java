@@ -2,9 +2,10 @@ package nl.daanh.hiromibot.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.music.GuildMusicManager;
@@ -15,13 +16,15 @@ import java.util.concurrent.TimeUnit;
 
 public class NowPlayingCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
-        TextChannel textChannel = event.getChannel();
+    public void handle(CommandContext ctx) {
+        TextChannel textChannel = ctx.getChannel();
+        Guild guild = ctx.getGuild();
+        Member selfMember = ctx.getSelfMember();
         PlayerManager playerManager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
+        GuildMusicManager musicManager = playerManager.getGuildMusicManager(guild);
         AudioPlayer player = musicManager.player;
 
-        if (player.getPlayingTrack() == null || event.getGuild().getSelfMember().getVoiceState() == null || !event.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
+        if (player.getPlayingTrack() == null || selfMember.getVoiceState() == null || !selfMember.getVoiceState().inVoiceChannel()) {
             textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("It doesn't look like I'm playing any music.", false).build()).queue();
             return;
         }
@@ -39,17 +42,23 @@ public class NowPlayingCommand implements CommandInterface {
 
     @Override
     public String getHelp() {
-        return "Shows you the current song that is playing and time in song.";
+        return "Shows you the current song that is playing and time in song.\n" +
+                "Usage: ``np``";
     }
 
     @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "`";
+    public CATEGORY getCategory() {
+        return CATEGORY.MUSIC;
     }
 
     @Override
     public String getInvoke() {
         return "np";
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return List.of("nowplaying", "currentsong", "whatisplaying", "nowplay", "nplaying", "playing", "current", "now");
     }
 
     private String formatTime(long timeInMillis) {

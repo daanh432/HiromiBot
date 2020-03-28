@@ -6,9 +6,8 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
-import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 
@@ -16,11 +15,11 @@ import java.util.List;
 
 public class JoinVoiceChatCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
-        TextChannel textChannel = event.getChannel();
-        AudioManager audioManager = event.getGuild().getAudioManager();
-        Member member = event.getMember();
-        Member selfMember = event.getGuild().getSelfMember();
+    public void handle(CommandContext ctx) {
+        TextChannel textChannel = ctx.getChannel();
+        AudioManager audioManager = ctx.getAudioManager();
+        Member member = ctx.getMember();
+        Member selfMember = ctx.getSelfMember();
 
         if (audioManager.isConnected()) {
             if (audioManager.getConnectedChannel() != null) {
@@ -33,27 +32,25 @@ public class JoinVoiceChatCommand implements CommandInterface {
             return;
         }
 
-        if (member != null) {
-            GuildVoiceState memberVoiceState = member.getVoiceState();
-            if (memberVoiceState != null) {
-                if (!memberVoiceState.inVoiceChannel() || memberVoiceState.getChannel() == null) {
-                    textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("You have to be connected to a voice channel first.", false).build()).queue();
-                    return;
-                }
+        GuildVoiceState memberVoiceState = member.getVoiceState();
+        if (memberVoiceState != null) {
+            if (!memberVoiceState.inVoiceChannel() || memberVoiceState.getChannel() == null) {
+                textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("You have to be connected to a voice channel first.", false).build()).queue();
+                return;
+            }
 
-                VoiceChannel voiceChannel = memberVoiceState.getChannel();
+            VoiceChannel voiceChannel = memberVoiceState.getChannel();
 
-                if (!selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT)) {
-                    EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("I'm missing the permission voice connect to join `%s`.", voiceChannel.getName()), false);
-                    textChannel.sendMessage(embedBuilder.build()).queue();
-                    return;
-                }
-
-                audioManager.openAudioConnection(voiceChannel);
-                EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Joining the voice channel `%s`.", voiceChannel.getName()), false);
+            if (!selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT)) {
+                EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("I'm missing the permission voice connect to join `%s`.", voiceChannel.getName()), false);
                 textChannel.sendMessage(embedBuilder.build()).queue();
                 return;
             }
+
+            audioManager.openAudioConnection(voiceChannel);
+            EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Joining the voice channel `%s`.", voiceChannel.getName()), false);
+            textChannel.sendMessage(embedBuilder.build()).queue();
+            return;
         }
 
         textChannel.sendMessage("An error occurred trying to execute that command. Please try again later.").queue();
@@ -61,16 +58,22 @@ public class JoinVoiceChatCommand implements CommandInterface {
 
     @Override
     public String getHelp() {
-        return "Makes the bot join a voice channel";
+        return "Makes the bot join a voice channel\n" +
+                "Usage: ``join``";
     }
 
     @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "`";
+    public CATEGORY getCategory() {
+        return CATEGORY.MUSIC;
     }
 
     @Override
     public String getInvoke() {
         return "join";
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return List.of("connect");
     }
 }
