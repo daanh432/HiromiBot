@@ -1,5 +1,6 @@
 package nl.daanh.hiromibot.utils;
 
+import nl.daanh.hiromibot.objects.CommandInterface;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -10,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SettingsUtil {
     private static final Integer EXPIRES_IN = 60; // 60 seconds
@@ -29,6 +32,7 @@ public class SettingsUtil {
             case "musicEnabled":
                 return "false";
             case "funEnabled":
+            case "moderationEnabled":
                 return "true";
             default:
                 return String.format("NO_DEFAULT_VALUE_FOR_%s", key.toUpperCase());
@@ -127,5 +131,25 @@ public class SettingsUtil {
 
     public static void setFunEnabled(Long guildId, Boolean funEnabled) {
         writeKey(guildId, "funEnabled", funEnabled ? "true" : "false");
+    }
+
+    public static Boolean getModerationEnabled(Long guildId) {
+        String moderationEnabled = getKey(guildId, "moderationEnabled").toLowerCase();
+        return moderationEnabled.equals("on") || moderationEnabled.equals("true") || moderationEnabled.equals("enabled") || moderationEnabled.equals("1") || moderationEnabled.equals("enable");
+    }
+
+    public static void setModerationEnabled(Long guildId, Boolean moderationEnabled) {
+        writeKey(guildId, "moderationEnabled", moderationEnabled ? "true" : "false");
+    }
+
+    public static List<CommandInterface.CATEGORY> getEnabledCategories(Long guildId) {
+        List<CommandInterface.CATEGORY> list = new ArrayList<>();
+        list.add(CommandInterface.CATEGORY.OTHER);
+
+        if (SettingsUtil.getMusicEnabled(guildId)) list.add(CommandInterface.CATEGORY.MUSIC);
+        if (SettingsUtil.getFunEnabled(guildId)) list.add(CommandInterface.CATEGORY.FUN);
+        if (SettingsUtil.getModerationEnabled(guildId)) list.add(CommandInterface.CATEGORY.MODERATION);
+
+        return list;
     }
 }

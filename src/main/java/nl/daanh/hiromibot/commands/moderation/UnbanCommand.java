@@ -5,8 +5,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 
 import java.util.List;
@@ -20,14 +19,16 @@ public class UnbanCommand implements CommandInterface {
     }
 
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
+    public void handle(CommandContext ctx) {
+        List<String> args = ctx.getArgs();
         String joinedArgs = String.join("", args);
-        TextChannel channel = event.getChannel();
-        Member member = event.getMember();
-        Member selfMember = event.getGuild().getSelfMember();
+        TextChannel channel = ctx.getChannel();
+        Member member = ctx.getMember();
+        Member selfMember = ctx.getSelfMember();
+        Guild guild = ctx.getGuild();
 
         if (args.isEmpty()) {
-            channel.sendMessage("Missing arguments. " + getUsage()).queue();
+            channel.sendMessage(this.getHelp()).queue();
             return;
         }
 
@@ -41,7 +42,7 @@ public class UnbanCommand implements CommandInterface {
             return;
         }
 
-        event.getGuild().retrieveBanList().queue(bans -> {
+        guild.retrieveBanList().queue(bans -> {
             List<User> goodUsers = bans.stream().filter(ban -> isCorrectUser(ban, joinedArgs)).map(Guild.Ban::getUser).collect(Collectors.toList());
 
             if (goodUsers.isEmpty()) {
@@ -51,7 +52,7 @@ public class UnbanCommand implements CommandInterface {
 
             User targetUser = goodUsers.get(0);
 
-            event.getGuild().unban(targetUser).reason(String.format("Unbanned by: %#s", event.getAuthor())).queue();
+            guild.unban(targetUser).reason(String.format("Unbanned by: %#s", member)).queue();
             channel.sendMessage(String.format("User %#s has been unbanned.", targetUser)).queue();
         });
 
@@ -61,12 +62,13 @@ public class UnbanCommand implements CommandInterface {
 
     @Override
     public String getHelp() {
-        return "Unbans the specified user from the guild.";
+        return "Unbans the specified user from the guild.\n" +
+                "Usage: ``unban <mention>``";
     }
 
     @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "` [user name/@user mention/user id]";
+    public CATEGORY getCategory() {
+        return CATEGORY.MODERATION;
     }
 
     @Override

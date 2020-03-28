@@ -2,27 +2,29 @@ package nl.daanh.hiromibot.commands.moderation;
 
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 
 import java.util.List;
 
 public class BanCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
-        TextChannel channel = event.getChannel();
-        Member member = event.getMember();
-        Member selfMember = event.getGuild().getSelfMember();
+    public void handle(CommandContext ctx) {
+        TextChannel channel = ctx.getChannel();
+        Guild guild = ctx.getGuild();
+        Member member = ctx.getMember();
+        Member selfMember = ctx.getSelfMember();
+        List<String> args = ctx.getArgs();
 
         if (args.isEmpty()) {
-            channel.sendMessage("Missing arguments. " + getUsage()).queue();
+            channel.sendMessage(this.getHelp()).queue();
             return;
         }
 
-        List<Member> foundMembers = FinderUtil.findMembers(args.get(0), event.getGuild());
+        List<Member> foundMembers = FinderUtil.findMembers(args.get(0), guild);
 
         if (foundMembers.isEmpty()) {
             channel.sendMessage("No users found for `" + args.get(0) + "`").queue();
@@ -42,19 +44,19 @@ public class BanCommand implements CommandInterface {
             return;
         }
 
-        event.getGuild().ban(targetMember, 0).reason(String.format("Banned by: %#s, with reason: %s", event.getAuthor(), kickReason)).queue();
+        guild.ban(targetMember, 0).reason(String.format("Banned by: %#s, with reason: %s", member, kickReason)).queue();
         channel.sendMessage(String.format("User %#s has been banned.", targetMember)).queue();
     }
 
     @Override
     public String getHelp() {
         return "Bans specified user off the server\n" +
-                getUsage();
+                "Usage: ``ban <mention>``";
     }
 
     @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "` [user name/@user mention/user id] <reason>";
+    public CATEGORY getCategory() {
+        return CATEGORY.MODERATION;
     }
 
     @Override

@@ -17,10 +17,9 @@ import java.util.Timer;
 class Listener extends ListenerAdapter {
     private static Timer garbageCollectionTimer = new Timer();
     private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
-    private final CommandHandler commandHandler;
+    private final CommandManager commandManager = new CommandManager();
 
-    Listener(CommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    Listener() {
         garbageCollectionTimer.schedule(new RateLimitGarbageCollection(), 5000, 300000);
     }
 
@@ -33,7 +32,9 @@ class Listener extends ListenerAdapter {
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         String rawMessage = event.getMessage().getContentRaw().toLowerCase();
 
-        if (event.getAuthor().getIdLong() == Config.getInstance().getLong("owner") && rawMessage.equalsIgnoreCase(Config.getInstance().getString("prefix") + "shutdown")) {
+        if (event.getAuthor().getIdLong() == Config.getInstance().getLong("owner")
+                && event.getJDA().getShardManager() != null
+                && rawMessage.equalsIgnoreCase(Config.getInstance().getString("prefix") + "shutdown")) {
             shutdown(event.getJDA().getShardManager());
             return;
         }
@@ -52,7 +53,7 @@ class Listener extends ListenerAdapter {
             return;
 
         if (RateLimiter.AllowedToRun(event.getChannel(), event.getMember())) {
-            commandHandler.HandleCommand(event, prefix);
+            commandManager.handle(event, prefix);
         }
     }
 

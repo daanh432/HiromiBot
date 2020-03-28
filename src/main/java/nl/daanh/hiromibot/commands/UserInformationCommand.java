@@ -2,11 +2,8 @@ package nl.daanh.hiromibot.commands;
 
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Config;
+import net.dv8tion.jda.api.entities.*;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 
@@ -29,33 +26,46 @@ public class UserInformationCommand implements CommandInterface {
     }
 
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
+    public void handle(CommandContext ctx) {
+        List<String> args = ctx.getArgs();
+        TextChannel channel = ctx.getChannel();
+        Guild guild = ctx.getGuild();
+        Member member = ctx.getMember();
         String joinedArgs = String.join("", args);
-        if (args.isEmpty() && event.getMember() != null) {
-            event.getChannel().sendMessage(generateEmbed(event.getMember().getUser(), event.getMember())).queue();
-        } else {
-            List<Member> foundMembers = FinderUtil.findMembers(joinedArgs, event.getGuild());
-            if (foundMembers.isEmpty()) {
-                event.getChannel().sendMessage("No users found for `" + joinedArgs + "`").queue();
-                return;
-            }
-            event.getChannel().sendMessage(generateEmbed(foundMembers.get(0).getUser(), foundMembers.get(0))).queue();
+
+        if (args.isEmpty()) {
+            channel.sendMessage(generateEmbed(member.getUser(), member)).queue();
+            return;
         }
+
+        List<Member> foundMembers = FinderUtil.findMembers(joinedArgs, guild);
+
+        if (foundMembers.isEmpty()) {
+            channel.sendMessage("No users found for `" + joinedArgs + "`").queue();
+            return;
+        }
+
+        channel.sendMessage(generateEmbed(foundMembers.get(0).getUser(), foundMembers.get(0))).queue();
     }
 
     @Override
-    public String getHelp() {
-        return "Displays information about yourself or a different user.\n" +
-                getUsage();
-    }
-
-    @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + " [user name/@user mention/user id]`";
+    public CATEGORY getCategory() {
+        return CATEGORY.OTHER;
     }
 
     @Override
     public String getInvoke() {
         return "userinfo";
+    }
+
+    @Override
+    public String getHelp() {
+        return "Displays information about yourself or a different user.\n" +
+                "Usage: userinfo ``<mention>``";
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return List.of("whois");
     }
 }

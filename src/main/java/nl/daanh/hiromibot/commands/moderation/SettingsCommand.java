@@ -3,7 +3,7 @@ package nl.daanh.hiromibot.commands.moderation;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.SettingsUtil;
 
@@ -11,8 +11,10 @@ import java.util.List;
 
 public class SettingsCommand implements CommandInterface {
     @Override
-    public void handle(List<String> args, GuildMessageReceivedEvent event) {
-        TextChannel channel = event.getChannel();
+    public void handle(CommandContext ctx) {
+        TextChannel channel = ctx.getChannel();
+        List<String> args = ctx.getArgs();
+        GuildMessageReceivedEvent event = ctx.getEvent();
 
         if (args.isEmpty()) {
             channel.sendMessage("WIP").queue();
@@ -40,7 +42,7 @@ public class SettingsCommand implements CommandInterface {
                 channel.sendMessage(String.format("Fun commands are %s on this server.", SettingsUtil.getFunEnabled(guild.getIdLong()) ? "enabled" : "disabled")).queue();
                 break;
             default:
-                channel.sendMessage("This setting is not found. " + getUsage()).queue();
+                channel.sendMessage("This setting is not found.\n" + this.getHelp()).queue();
                 break;
         }
     }
@@ -77,19 +79,22 @@ public class SettingsCommand implements CommandInterface {
                 }
                 break;
             default:
-                channel.sendMessage("This setting is not found. " + getUsage()).queue();
+                channel.sendMessage("This setting is not found.\n" + this.getHelp()).queue();
                 break;
         }
     }
 
     @Override
     public String getHelp() {
-        return "Change settings for this guild.";
+        return "Change settings for this guild.\n" +
+                "Usage: ``settings``\n" +
+                "Usage: ``settings <setting>``\n" +
+                "Usage: ``settings <setting> <value>``";
     }
 
     @Override
-    public String getUsage() {
-        return "Usage: `" + Config.getInstance().getString("prefix") + getInvoke() + "`";
+    public CATEGORY getCategory() {
+        return CATEGORY.MODERATION;
     }
 
     @Override

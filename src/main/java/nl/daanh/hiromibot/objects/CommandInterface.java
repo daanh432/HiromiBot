@@ -1,16 +1,25 @@
 package nl.daanh.hiromibot.objects;
 
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-
 import java.util.List;
 
-public interface CommandInterface {
 
-    void handle(List<String> args, GuildMessageReceivedEvent event);
+public interface CommandInterface {
+    void handle(CommandContext ctx);
 
     String getHelp();
 
-    String getUsage();
-
     String getInvoke();
+
+    CATEGORY getCategory();
+
+    default List<String> getAliases() {
+        return List.of();
+    }
+
+    enum CATEGORY {
+        FUN,
+        MUSIC,
+        MODERATION,
+        OTHER
+    }
 }

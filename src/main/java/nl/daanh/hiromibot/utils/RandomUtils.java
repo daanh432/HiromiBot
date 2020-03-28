@@ -18,7 +18,7 @@ public class RandomUtils {
 
     public static Boolean inSameVoiceChannel(Member member, Member self) {
         if (member != null && self != null && member.getVoiceState() != null && self.getVoiceState() != null) {
-            return member.getVoiceState().getChannel() != self.getVoiceState().getChannel();
+            return member.getVoiceState().getChannel() == self.getVoiceState().getChannel();
         }
         return false;
     }

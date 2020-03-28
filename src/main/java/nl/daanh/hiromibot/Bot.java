@@ -22,9 +22,7 @@ public class Bot {
         try {
             // Load config file
             final Config config = new Config(new File("settings.json"));
-
-            final CommandHandler commandHandler = new CommandHandler(RandomUtils.randomGenerator);
-            final Listener listener = new Listener(commandHandler);
+            final Listener listener = new Listener();
 
             // Set utils
             setEmbedTemplate();
