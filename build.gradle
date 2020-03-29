@@ -28,6 +28,9 @@ publishing {
         gpr(MavenPublication) {
             from(components.java)
         }
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        }
     }
 }
 
