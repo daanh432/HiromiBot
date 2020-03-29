@@ -19,8 +19,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/daanh432/HiromiBot")
             credentials {
-                username = System.getenv("USERNAME")
-                password = System.getenv("PASSWORD")
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
