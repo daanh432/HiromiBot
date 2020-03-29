@@ -20,7 +20,9 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Build with Gradle
-        run: gradle build
+        run: |
+          gradle build
+          gradle shadowJar
 
       - name: Publish to GitHub Packages
         env:
