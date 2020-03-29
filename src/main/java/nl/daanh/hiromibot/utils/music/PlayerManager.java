@@ -31,9 +31,7 @@ public class PlayerManager {
     }
 
     public static synchronized PlayerManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new PlayerManager();
-        }
+        if (INSTANCE == null) INSTANCE = new PlayerManager();
         return INSTANCE;
     }
 

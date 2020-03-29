@@ -23,6 +23,10 @@ public class TrackScheduler extends AudioEventAdapter {
         this.queue = new LinkedBlockingQueue<>();
     }
 
+    public BlockingQueue<AudioTrack> getQueue() {
+        return queue;
+    }
+
     /**
      * Add the next track to queue or play right away if nothing is in the queue.
      *
@@ -35,10 +39,6 @@ public class TrackScheduler extends AudioEventAdapter {
         if (!player.startTrack(track, true)) {
             queue.offer(track);
         }
-    }
-
-    public BlockingQueue<AudioTrack> getQueue() {
-        return queue;
     }
 
     /**

@@ -1,5 +1,6 @@
 package nl.daanh.hiromibot;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.commands.HelpCommand;
 import nl.daanh.hiromibot.commands.PingCommand;
@@ -26,8 +27,9 @@ import java.util.regex.Pattern;
 public class CommandManager {
     private final List<CommandInterface> commands = new ArrayList<>();
 
-    public CommandManager() {
-        Config config = Config.getInstance();
+    public CommandManager(EventWaiter eventWaiter) {
+        final Config config = Config.getInstance();
+
         // Other commands
         addCommand(new HelpCommand(this));
         addCommand(new UserInformationCommand());
@@ -55,7 +57,7 @@ public class CommandManager {
             addCommand(new LeaveVoiceChatCommand());
             addCommand(new PlayCommand());
             addCommand(new StopCommand());
-            addCommand(new QueueCommand());
+            addCommand(new QueueCommand(eventWaiter));
             addCommand(new SkipCommand());
             addCommand(new NowPlayingCommand());
         }

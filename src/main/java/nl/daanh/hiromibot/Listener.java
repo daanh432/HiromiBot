@@ -1,9 +1,14 @@
 package nl.daanh.hiromibot;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import nl.daanh.hiromibot.utils.SettingsUtil;
@@ -17,15 +22,42 @@ import java.util.Timer;
 class Listener extends ListenerAdapter {
     private static Timer garbageCollectionTimer = new Timer();
     private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
-    private final CommandManager commandManager = new CommandManager();
+    private final CommandManager commandManager;
+    private final EventWaiter eventWaiter;
 
     Listener() {
         garbageCollectionTimer.schedule(new RateLimitGarbageCollection(), 5000, 300000);
+        this.eventWaiter = new EventWaiter();
+        this.commandManager = new CommandManager(this.eventWaiter);
     }
 
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         LOGGER.info("{} is ready", event.getJDA().getSelfUser().getAsTag());
+    }
+
+    @Override
+    public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {
+        this.eventWaiter.onEvent(event);
+    }
+
+    @Override
+    public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {
+        this.eventWaiter.onEvent(event);
+    }
+
+    @Override
+    public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {
+        this.eventWaiter.onEvent(event);
+    }
+
+    @Override
+    public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {
+        if (event.getAuthor().isBot() || event.getAuthor().isFake()) return;
+
+        if (RateLimiter.AllowedToRun(event.getChannel(), event.getAuthor())) {
+            event.getChannel().sendMessage("I don't operate in private channels.").queue();
+        }
     }
 
     @Override

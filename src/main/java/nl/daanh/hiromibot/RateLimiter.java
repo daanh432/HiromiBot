@@ -1,7 +1,9 @@
 package nl.daanh.hiromibot;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,30 +32,34 @@ class RateLimiter {
         }
     }
 
-    static boolean AllowedToRun(TextChannel channel, Member member) {
+    public static boolean AllowedToRun(TextChannel channel, Member member) {
+        return RateLimiter.AllowedToRun(channel, member.getUser());
+    }
+
+    public static boolean AllowedToRun(MessageChannel channel, User user) {
         long currentTime = RateLimiter.CurrentTime();
-        RateLimitObject time = buffer.getOrDefault(member.getIdLong(), new RateLimitObject(0L, 0));
+        RateLimitObject time = buffer.getOrDefault(user.getIdLong(), new RateLimitObject(0L, 0));
 
         if (currentTime > time.getTime() + RateLimiter.timeBetweenMessages) {
-            buffer.remove(member.getIdLong());
-            RateLimit(channel, member);
+            buffer.remove(user.getIdLong());
+            RateLimit(channel, user);
             return true;
         } else {
-            RateLimit(channel, member);
+            RateLimit(channel, user);
             return false;
         }
     }
 
-    private static void RateLimit(TextChannel channel, Member member) {
-        if (buffer.containsKey(member.getIdLong())) {
-            RateLimitObject rateLimitObject = buffer.get(member.getIdLong());
+    private static void RateLimit(MessageChannel channel, User user) {
+        if (buffer.containsKey(user.getIdLong())) {
+            RateLimitObject rateLimitObject = buffer.get(user.getIdLong());
             rateLimitObject.times++;
             if (rateLimitObject.times == 2) {
                 channel.sendMessage("OwO calm down! I'm cooling down from your last request!").queue();
             }
         } else {
             RateLimitObject rateLimitObject = new RateLimitObject(RateLimiter.CurrentTime(), 1);
-            buffer.put(member.getIdLong(), rateLimitObject);
+            buffer.put(user.getIdLong(), rateLimitObject);
         }
     }
 }
