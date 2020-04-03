@@ -1,7 +1,7 @@
 package nl.daanh.hiromibot.commands;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 
@@ -11,11 +11,11 @@ public class PingCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {
         JDA jda = ctx.getJDA();
-        GuildMessageReceivedEvent event = ctx.getEvent();
+        TextChannel channel = ctx.getChannel();
         long startTime = System.currentTimeMillis();
-        event.getChannel().sendMessage("Pong!").queue(message -> {
+        channel.sendMessage("Pong!").queue(message -> {
             long finishTime = System.currentTimeMillis();
-            event.getJDA().getRestPing().queue((ping) -> message.editMessage("Gateway ping is " + event.getJDA().getGatewayPing() + "ms, Rest API Ping is " + ping + "ms, message took " + (finishTime - startTime) + "ms to send.").queue());
+            jda.getRestPing().queue((ping) -> message.editMessage("Gateway ping is " + jda.getGatewayPing() + "ms, Rest API Ping is " + ping + "ms, message took " + (finishTime - startTime) + "ms to send.").queue());
         });
     }
 
