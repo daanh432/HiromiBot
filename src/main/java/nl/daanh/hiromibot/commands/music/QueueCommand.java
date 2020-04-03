@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.exceptions.PermissionException;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
-import nl.daanh.hiromibot.utils.music.GuildMusicManager;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.ArrayList;
@@ -47,8 +46,7 @@ public class QueueCommand implements CommandInterface {
         Guild guild = ctx.getGuild();
         Member member = ctx.getMember();
         PlayerManager playerManager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = playerManager.getGuildMusicManager(guild);
-        BlockingQueue<AudioTrack> queue = musicManager.scheduler.getQueue();
+        BlockingQueue<AudioTrack> queue = playerManager.getQueue(guild);
 
         if (queue.isEmpty()) {
             EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed("It looks like nothing is queued. Add something to the queue with the following command `hi!play <url>`", false);
@@ -81,8 +79,11 @@ public class QueueCommand implements CommandInterface {
 //        tracks.subList(end, size).clear();
         pbuilder.clearItems();
 
+        long totalDuration = 0;
+
         for (AudioTrack track : tracks) {
             AudioTrackInfo trackInfo = track.getInfo();
+            totalDuration = totalDuration + trackInfo.length;
             String trackDuration = String.format("%d min, %d sec",
                     TimeUnit.MILLISECONDS.toMinutes(trackInfo.length),
                     TimeUnit.MILLISECONDS.toSeconds(trackInfo.length) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(trackInfo.length))
@@ -90,10 +91,15 @@ public class QueueCommand implements CommandInterface {
             pbuilder.addItems(String.format("%s - (%s)\n", trackInfo.title, trackDuration));
         }
 
+        long hours = TimeUnit.MILLISECONDS.toHours(totalDuration);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(totalDuration) - TimeUnit.HOURS.toMinutes(hours);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(totalDuration) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+
+        String totalDurationString = String.format("%h h, %d min, %d sec", hours, minutes, seconds);
 
         Paginator p = pbuilder
-                .setText(String.format("Here you go %#s! This is the current queue.\n" +
-                        "Use the buttons down below to switch pages.", member))
+                .setText(String.format("Total queue length: %s.\n" +
+                        "Use the buttons down below to switch pages.", totalDurationString))
                 .setUsers(member.getUser())
                 .build();
 

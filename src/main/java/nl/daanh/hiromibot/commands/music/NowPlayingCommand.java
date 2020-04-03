@@ -1,6 +1,6 @@
 package nl.daanh.hiromibot.commands.music;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
-import nl.daanh.hiromibot.utils.music.GuildMusicManager;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.List;
@@ -21,22 +20,21 @@ public class NowPlayingCommand implements CommandInterface {
         Guild guild = ctx.getGuild();
         Member selfMember = ctx.getSelfMember();
         PlayerManager playerManager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = playerManager.getGuildMusicManager(guild);
-        AudioPlayer player = musicManager.player;
+        AudioTrack playingTrack = playerManager.getPlayingTrack(guild);
 
-        if (player.getPlayingTrack() == null || selfMember.getVoiceState() == null || !selfMember.getVoiceState().inVoiceChannel()) {
+        if (playingTrack == null || selfMember.getVoiceState() == null || !selfMember.getVoiceState().inVoiceChannel()) {
             textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("It doesn't look like I'm playing any music.", false).build()).queue();
             return;
         }
 
-        AudioTrackInfo trackInfo = player.getPlayingTrack().getInfo();
+        AudioTrackInfo trackInfo = playingTrack.getInfo();
         textChannel.sendMessage(EmbedUtils.defaultMusicEmbed(String.format(
                 "**Playing** [%s](%s)\n%s %s - %s",
                 trackInfo.title,
                 trackInfo.uri,
-                player.isPaused() ? "\u23F8" : "▶",
-                formatTime(player.getPlayingTrack().getPosition()),
-                formatTime(player.getPlayingTrack().getDuration())
+                playerManager.isPaused(guild) ? "\u23F8" : "▶",
+                formatTime(playingTrack.getPosition()),
+                formatTime(playingTrack.getDuration())
         ), true).build()).queue();
     }
 

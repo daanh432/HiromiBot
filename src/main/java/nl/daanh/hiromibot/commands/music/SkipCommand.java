@@ -1,6 +1,6 @@
 package nl.daanh.hiromibot.commands.music;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -10,9 +10,7 @@ import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
-import nl.daanh.hiromibot.utils.music.GuildMusicManager;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
-import nl.daanh.hiromibot.utils.music.TrackScheduler;
 
 public class SkipCommand implements CommandInterface {
     @Override
@@ -28,25 +26,23 @@ public class SkipCommand implements CommandInterface {
         }
 
         PlayerManager playerManager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = playerManager.getGuildMusicManager(guild);
-        TrackScheduler scheduler = musicManager.scheduler;
-        AudioPlayer player = musicManager.player;
+        AudioTrack playingTrack = playerManager.getPlayingTrack(guild);
 
-        if (player.getPlayingTrack() == null || selfMember.getVoiceState() == null || !selfMember.getVoiceState().inVoiceChannel()) {
+        if (playingTrack == null || selfMember.getVoiceState() == null || !selfMember.getVoiceState().inVoiceChannel()) {
             textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("It doesn't look like I'm playing any music.", false).build()).queue();
             return;
         }
 
         try {
-            AudioTrackInfo previousTrack = player.getPlayingTrack().getInfo();
-            scheduler.nextTrack();
+            AudioTrackInfo previousTrack = playingTrack.getInfo();
+            playerManager.skipTrack(guild);
 
             EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Skipping ``%s``. Now playing ``%s``",
                     previousTrack.title,
-                    player.getPlayingTrack().getInfo().title), true);
+                    playingTrack.getInfo().title), true);
             textChannel.sendMessage(embedBuilder.build()).queue();
         } catch (Exception exception) {
-            textChannel.sendMessage(EmbedUtils.defaultMusicEmbed(String.format("Something went wrong trying to skip ``%s``", player.getPlayingTrack().getInfo().title), false).build()).queue();
+            textChannel.sendMessage(EmbedUtils.defaultMusicEmbed(String.format("Something went wrong trying to skip ``%s``", playingTrack.getInfo().title), false).build()).queue();
         }
     }
 

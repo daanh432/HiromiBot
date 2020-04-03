@@ -8,7 +8,6 @@ import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
-import nl.daanh.hiromibot.utils.music.GuildMusicManager;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.List;
@@ -28,11 +27,7 @@ public class StopCommand implements CommandInterface {
         }
 
         PlayerManager playerManager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = playerManager.getGuildMusicManager(guild);
-
-        musicManager.scheduler.getQueue().clear();
-        musicManager.player.stopTrack();
-        musicManager.player.setPaused(false);
+        playerManager.purge(guild);
 
         EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed("Stopping and clearing the queue", true);
         textChannel.sendMessage(embedBuilder.build()).queue();

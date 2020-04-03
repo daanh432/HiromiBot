@@ -36,6 +36,7 @@ publishing {
 
 repositories {
     jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 jar {
@@ -71,6 +72,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    // https://github.com/FredBoat/Lavalink-Client
+    compile group: 'com.github.FredBoat', name: 'Lavalink-Client', version: '4.0'
 }
 
 application {
