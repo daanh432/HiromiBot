@@ -53,7 +53,7 @@ shadowJar {
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-    compile group: 'net.dv8tion', name: 'JDA', version: '4.0.0_44'
+    compile group: 'net.dv8tion', name: 'JDA', version: '4.1.1_130'
 
     // https://mvnrepository.com/artifact/com.jagrosh/jda-utilities-commons
     compile group: 'com.jagrosh', name: 'jda-utilities-commons', version: '3.0.2'
@@ -74,7 +74,7 @@ dependencies {
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
     // https://github.com/FredBoat/Lavalink-Client
-    compile group: 'com.github.FredBoat', name: 'Lavalink-Client', version: '4.0'
+    compile group: 'com.github.FredBoat', name: 'Lavalink-Client', version: 'bdac72f'
 }
 
 application {

@@ -1,9 +1,12 @@
 package nl.daanh.hiromibot.utils.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import lavalink.client.player.IPlayer;
+import lavalink.client.player.event.AudioEventAdapterWrapped;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -11,14 +14,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
  */
-public class TrackScheduler extends AudioEventAdapter {
-    private final AudioPlayer player;
+public class TrackScheduler extends AudioEventAdapterWrapped {
+    private static final Logger logger = LoggerFactory.getLogger(TrackScheduler.class);
+    private static final int QUEUE_SIZE = 50;
+    private final IPlayer player;
     private final BlockingQueue<AudioTrack> queue;
 
     /**
      * @param player The audio player this scheduler uses
      */
-    public TrackScheduler(AudioPlayer player) {
+    public TrackScheduler(IPlayer player) {
         this.player = player;
         this.queue = new LinkedBlockingQueue<>();
     }
@@ -36,8 +41,16 @@ public class TrackScheduler extends AudioEventAdapter {
         // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
         // track goes to the queue instead.
-        if (!player.startTrack(track, true)) {
+
+        if (queue.size() >= QUEUE_SIZE) {
+            // Limit reached handling?
+            return;
+        }
+
+        if (player.getPlayingTrack() != null) {
             queue.offer(track);
+        } else {
+            player.playTrack(track);
         }
     }
 
@@ -47,7 +60,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public void nextTrack() {
         // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
         // giving null to startTrack, which is a valid argument and will simply stop the player.
-        player.startTrack(queue.poll(), false);
+        player.playTrack(queue.poll());
     }
 
     @Override
@@ -56,5 +69,10 @@ public class TrackScheduler extends AudioEventAdapter {
         if (endReason.mayStartNext) {
             nextTrack();
         }
+    }
+
+    @Override
+    public void onTrackStart(AudioPlayer player, AudioTrack track) {
+        super.onTrackStart(player, track);
     }
 }

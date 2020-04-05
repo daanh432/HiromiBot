@@ -1,10 +1,11 @@
 package nl.daanh.hiromibot.objects;
 
+import lavalink.client.io.jda.JdaLink;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
 
 public interface CommandContextInterface {
 
@@ -40,7 +41,7 @@ public interface CommandContextInterface {
         return this.getJDA().getShardManager();
     }
 
-    default AudioManager getAudioManager() {
-        return this.getGuild().getAudioManager();
+    default JdaLink getLavalink() {
+        return LavalinkUtils.getLavalink().getLink(this.getGuild());
     }
 }

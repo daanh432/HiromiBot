@@ -1,7 +1,8 @@
 package nl.daanh.hiromibot.utils.music;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
+import lavalink.client.player.IPlayer;
+import lavalink.client.player.LavaplayerPlayerWrapper;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 
 import java.nio.Buffer;
@@ -13,15 +14,15 @@ import java.nio.ByteBuffer;
  * provide20MsAudio().
  */
 public class AudioPlayerSendHandler implements AudioSendHandler {
-    private final AudioPlayer audioPlayer;
+    private final LavaplayerPlayerWrapper audioPlayer;
     private final ByteBuffer buffer;
     private final MutableAudioFrame frame;
 
     /**
      * @param audioPlayer Audio player to wrap.
      */
-    public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
-        this.audioPlayer = audioPlayer;
+    public AudioPlayerSendHandler(IPlayer audioPlayer) {
+        this.audioPlayer = (LavaplayerPlayerWrapper) audioPlayer;
         this.buffer = ByteBuffer.allocate(1024);
         this.frame = new MutableAudioFrame();
         this.frame.setBuffer(buffer);

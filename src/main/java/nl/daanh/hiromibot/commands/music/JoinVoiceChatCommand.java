@@ -2,14 +2,11 @@ package nl.daanh.hiromibot.commands.music;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.entities.*;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
 
 import java.util.List;
 
@@ -17,13 +14,13 @@ public class JoinVoiceChatCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {
         TextChannel textChannel = ctx.getChannel();
-        AudioManager audioManager = ctx.getAudioManager();
+        Guild guild = ctx.getGuild();
         Member member = ctx.getMember();
         Member selfMember = ctx.getSelfMember();
 
-        if (audioManager.isConnected()) {
-            if (audioManager.getConnectedChannel() != null) {
-                EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("I'm already connected to `%s`.", audioManager.getConnectedChannel().getName()), false);
+        if (LavalinkUtils.isConnected(guild)) {
+            if (LavalinkUtils.getConnectedChannel(guild) != null) {
+                EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("I'm already connected to `%s`.", LavalinkUtils.getConnectedChannel(guild).getName()), false);
                 textChannel.sendMessage(embedBuilder.build()).queue();
                 return;
             }
@@ -47,7 +44,8 @@ public class JoinVoiceChatCommand implements CommandInterface {
                 return;
             }
 
-            audioManager.openAudioConnection(voiceChannel);
+//            audioManager.openAudioConnection(voiceChannel); // Strictly forbidden with lavalink
+            LavalinkUtils.openConnection(voiceChannel);
             EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Joining the voice channel `%s`.", voiceChannel.getName()), false);
             textChannel.sendMessage(embedBuilder.build()).queue();
             return;

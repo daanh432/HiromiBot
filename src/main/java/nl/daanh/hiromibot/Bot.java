@@ -1,12 +1,13 @@
 package nl.daanh.hiromibot;
 
+import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
 import nl.daanh.hiromibot.utils.WebUtils;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ import java.time.Instant;
 import java.util.EnumSet;
 
 public class Bot {
-    public static final int SHARD_COUNT = 10;
+    public static final int SHARD_COUNT = 2;
     private static final Logger LOGGER = LoggerFactory.getLogger(Bot.class);
     private static Bot instance;
     private ShardManager shardManager;
@@ -35,11 +36,8 @@ public class Bot {
             setEmbedTemplate();
             setUnirestSettings(config);
 
-//            JdaLavalink lavalink = new JdaLavalink(
-//                    "524939737534955527",
-//                    SHARD_COUNT,
-//                    this::getJdaInstanceFromId
-//            );
+            LavalinkUtils lavalinkUtils = new LavalinkUtils(config.getString("token"));
+            JdaLavalink lavalink = LavalinkUtils.getLavalink();
 
             // Build JDA
             shardManagerBuilder.setToken(config.getString("token"))
@@ -50,12 +48,12 @@ public class Bot {
                     // Set activity of Discord user
                     .setActivity(Activity.listening(config.getString("activity")))
                     // Add listeners
-                    .addEventListeners(listener);
-            // Lavalink setup
-//                    .addEventListeners(lavalink)
-//                    .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
-            // Set shard count
-//                    .setShardsTotal(SHARD_COUNT);
+                    .addEventListeners(listener)
+                    // Lavalink setup
+                    .addEventListeners(lavalink)
+                    .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
+                    // Set shard count
+                    .setShardsTotal(SHARD_COUNT);
 
             shardManager = shardManagerBuilder.build();
 
@@ -71,10 +69,6 @@ public class Bot {
 
     public static void main(String[] args) {
         instance = new Bot();
-    }
-
-    private JDA getJdaInstanceFromId(int id) {
-        return this.shardManager.getShards().get(id);
     }
 
     public ShardManager getShardManager() {
