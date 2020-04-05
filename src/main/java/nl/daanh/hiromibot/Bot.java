@@ -1,9 +1,11 @@
 package nl.daanh.hiromibot;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
 import nl.daanh.hiromibot.utils.WebUtils;
@@ -14,13 +16,18 @@ import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.EnumSet;
 
 public class Bot {
+    public static final int SHARD_COUNT = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(Bot.class);
+    private static Bot instance;
+    private ShardManager shardManager;
 
     private Bot() {
         try {
             // Load config file
+            final DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder();
             final Config config = new Config(new File("settings.json"));
             final Listener listener = new Listener();
 
@@ -28,13 +35,29 @@ public class Bot {
             setEmbedTemplate();
             setUnirestSettings(config);
 
-            // Build JDA
-            DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder();
-            shardManagerBuilder.setToken(config.getString("token"));
-            shardManagerBuilder.setActivity(Activity.listening(config.getString("activity")));
-            shardManagerBuilder.addEventListeners(listener);
+//            JdaLavalink lavalink = new JdaLavalink(
+//                    "524939737534955527",
+//                    SHARD_COUNT,
+//                    this::getJdaInstanceFromId
+//            );
 
-            ShardManager shardManager = shardManagerBuilder.build();
+            // Build JDA
+            shardManagerBuilder.setToken(config.getString("token"))
+                    // Disable parts of the cache
+                    .setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY))
+                    // Enable the bulk delete event
+                    .setBulkDeleteSplittingEnabled(false)
+                    // Set activity of Discord user
+                    .setActivity(Activity.listening(config.getString("activity")))
+                    // Add listeners
+                    .addEventListeners(listener);
+            // Lavalink setup
+//                    .addEventListeners(lavalink)
+//                    .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
+            // Set shard count
+//                    .setShardsTotal(SHARD_COUNT);
+
+            shardManager = shardManagerBuilder.build();
 
             LOGGER.info("Bot has started with " + shardManager.getShards().size() + " shards on " + shardManager.getGuilds().size() + " guilds.");
         } catch (LoginException | IOException e) {
@@ -42,8 +65,20 @@ public class Bot {
         }
     }
 
+    public static Bot getInstance() {
+        return instance;
+    }
+
     public static void main(String[] args) {
-        new Bot();
+        instance = new Bot();
+    }
+
+    private JDA getJdaInstanceFromId(int id) {
+        return this.shardManager.getShards().get(id);
+    }
+
+    public ShardManager getShardManager() {
+        return this.shardManager;
     }
 
     private void setUnirestSettings(Config config) {

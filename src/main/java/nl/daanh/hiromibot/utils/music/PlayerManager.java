@@ -90,6 +90,7 @@ public class PlayerManager {
     private void play(final Guild guild, final GuildMusicManager musicManager, final AudioTrack track) {
         connectToFirstVoiceChannel(guild.getAudioManager());
 
+
         musicManager.scheduler.queue(track);
     }
 
