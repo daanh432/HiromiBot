@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.commands.HelpCommand;
 import nl.daanh.hiromibot.commands.PingCommand;
+import nl.daanh.hiromibot.commands.StatusCommand;
 import nl.daanh.hiromibot.commands.UserInformationCommand;
 import nl.daanh.hiromibot.commands.fun.HugCommand;
 import nl.daanh.hiromibot.commands.fun.MemeCommand;
@@ -34,6 +35,7 @@ public class CommandManager {
         addCommand(new HelpCommand(this));
         addCommand(new UserInformationCommand());
         addCommand(new PingCommand());
+        addCommand(new StatusCommand());
 
         // Moderation commands
         if (config.getBoolean("loadModerationCommands")) {
