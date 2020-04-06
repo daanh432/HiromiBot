@@ -3,8 +3,11 @@ package nl.daanh.hiromibot;
 import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
@@ -20,7 +23,7 @@ import java.time.Instant;
 import java.util.EnumSet;
 
 public class Bot {
-    public static final int SHARD_COUNT = 2;
+    public static final int SHARD_COUNT = 1;
     private static final Logger LOGGER = LoggerFactory.getLogger(Bot.class);
     private static Bot instance;
     private ShardManager shardManager;
@@ -28,7 +31,13 @@ public class Bot {
     private Bot() {
         try {
             // Load config file
-            final DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder();
+            final DefaultShardManagerBuilder shardManagerBuilder = DefaultShardManagerBuilder.create(
+                    GatewayIntent.GUILD_BANS,
+                    GatewayIntent.GUILD_VOICE_STATES,
+                    GatewayIntent.GUILD_MESSAGES,
+                    GatewayIntent.GUILD_MESSAGE_REACTIONS
+            );
+            shardManagerBuilder.setChunkingFilter(ChunkingFilter.NONE);
             final Config config = new Config(new File("settings.json"));
             final Listener listener = new Listener();
 
@@ -42,7 +51,8 @@ public class Bot {
             // Build JDA
             shardManagerBuilder.setToken(config.getString("token"))
                     // Disable parts of the cache
-                    .setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY))
+                    .disableCache(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS))
+                    .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                     // Enable the bulk delete event
                     .setBulkDeleteSplittingEnabled(false)
                     // Set activity of Discord user
