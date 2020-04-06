@@ -61,7 +61,7 @@ public class UserInformationCommand implements CommandInterface {
     @Override
     public String getHelp() {
         return "Displays information about yourself or a different user.\n" +
-                "Usage: userinfo ``<mention>``";
+                "Usage: ``userinfo <mention>``";
     }
 
     @Override
