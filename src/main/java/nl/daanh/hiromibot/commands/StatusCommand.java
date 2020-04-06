@@ -17,7 +17,7 @@ public class StatusCommand implements CommandInterface {
         stringBuilder.append("Aww! You're interested in me how sweet. Well here you go:\n");
         stringBuilder.append("I'm currently serving ").append(shardManager.getGuildCache().size()).append(" guilds\n");
         stringBuilder.append("Also we're on shard ").append(ctx.getJDA().getShardInfo().getShardId()).append(" together with ").append(ctx.getJDA().getGuildCache().size()).append(" others!\n");
-        stringBuilder.append("\n");
+        stringBuilder.append("\n\n");
         stringBuilder.append("Thanks for using our bot. Greetings HiromiBot team. :heart:");
 
         ctx.getChannel().sendMessage(EmbedUtils.embedMessage(stringBuilder.toString()).build()).queue();
