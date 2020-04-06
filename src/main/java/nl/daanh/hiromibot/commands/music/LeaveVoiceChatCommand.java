@@ -9,6 +9,7 @@ import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
+import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class LeaveVoiceChatCommand implements CommandInterface {
         }
 
         LavalinkUtils.closeConnection(ctx.getGuild());
+        PlayerManager.getInstance().setLastChannel(ctx.getGuild(), null);
         textChannel.sendMessage(EmbedUtils.defaultMusicEmbed(String.format("Leaving the voice channel ``%s``.", voiceChannel.getName()), true).build()).queue();
     }
 

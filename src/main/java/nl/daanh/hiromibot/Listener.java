@@ -1,9 +1,15 @@
 package nl.daanh.hiromibot;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -11,8 +17,11 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.SettingsUtil;
 import nl.daanh.hiromibot.utils.WebUtils;
+import nl.daanh.hiromibot.utils.music.PlayerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +40,53 @@ class Listener extends ListenerAdapter {
         this.commandManager = new CommandManager(this.eventWaiter);
     }
 
+    /**
+     * Checks if music playback should be paused
+     *
+     * @param channelLeft the channel that was left
+     * @param guild       the guild where the event happened
+     */
+    private void pauseMusicHandler(@Nonnull VoiceChannel channelLeft, @Nonnull Guild guild) {
+        if (channelLeft.getMembers().size() == 1) {
+            PlayerManager playerManager = PlayerManager.getInstance();
+            VoiceChannel musicChannel = LavalinkUtils.getConnectedChannel(guild);
+            if (musicChannel != null && musicChannel.equals(channelLeft)) {
+                this.pauseMusic(playerManager, guild);
+            }
+        }
+    }
+
+    /**
+     * Pauses music playback
+     *
+     * @param playerManager a playerManager instance
+     * @param guild         the guild where the event happened
+     */
+    private void pauseMusic(@Nonnull PlayerManager playerManager, @Nonnull Guild guild) {
+        TextChannel announceChannel = playerManager.getLastChannel(guild);
+        if (announceChannel != null && announceChannel.canTalk() && !playerManager.isPaused(guild)) {
+            EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Pausing music playback because everyone left the channel.\nResume by typing: ``%sresume``", Config.getInstance().getString("prefix")), true);
+            announceChannel.sendMessage(embedBuilder.build()).queue();
+        }
+        playerManager.setPaused(guild, true);
+    }
+
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         LOGGER.info("{} is ready", event.getJDA().getSelfUser().getAsTag());
+    }
+
+    @Override
+    public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
+        this.pauseMusicHandler(event.getChannelLeft(), event.getGuild());
+    }
+
+    @Override
+    public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {
+        this.pauseMusicHandler(event.getChannelLeft(), event.getGuild());
+        if (event.getMember().equals(event.getGuild().getSelfMember())) {
+            this.pauseMusic(PlayerManager.getInstance(), event.getGuild());
+        }
     }
 
     @Override
@@ -89,6 +142,11 @@ class Listener extends ListenerAdapter {
         }
     }
 
+    /**
+     * Shuts down the bot gracefully
+     *
+     * @param shardManager the shard manager you know
+     */
     private void shutdown(ShardManager shardManager) {
         LOGGER.warn("Shutting down on request.");
         for (JDA jda : shardManager.getShards()) {

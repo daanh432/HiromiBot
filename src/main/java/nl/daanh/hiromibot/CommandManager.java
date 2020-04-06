@@ -60,6 +60,8 @@ public class CommandManager {
             addCommand(new QueueCommand(eventWaiter));
             addCommand(new SkipCommand());
             addCommand(new NowPlayingCommand());
+            addCommand(new ResumeCommand());
+            addCommand(new PauseCommand());
         }
     }
 

@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 import nl.daanh.hiromibot.Bot;
+import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import javax.annotation.Nonnull;
 import java.net.URI;
@@ -24,7 +25,6 @@ public class LavalinkUtils {
     }
 
     private static void init() {
-        if (!isEnabled()) return;
         try {
             JdaLavalink lavalink = new JdaLavalink(
                     LavalinkUtils.getIdFromToken(LavalinkUtils.token),
@@ -42,10 +42,6 @@ public class LavalinkUtils {
         return lavalink;
     }
 
-    public static boolean isEnabled() {
-        return true;
-    }
-
 //    public IPlayer createPlayer(long guildId) {
 //        return isEnabled()
 //                ? lavalink.getLink(String.valueOf(guildId)).getPlayer()
@@ -58,25 +54,17 @@ public class LavalinkUtils {
         // Turn on the deafen icon for the bot
         audioManager.setSelfDeafened(true);
 
-        if (isEnabled()) {
-            lavalink.getLink(channel.getGuild()).connect(channel);
-        } else {
-            audioManager.openAudioConnection(channel);
-        }
+        lavalink.getLink(channel.getGuild()).connect(channel);
     }
 
     public static void closeConnection(Guild guild) {
-        if (isEnabled()) {
-            lavalink.getLink(guild).disconnect();
-        } else {
-            guild.getAudioManager().closeAudioConnection();
-        }
+        PlayerManager.getInstance().purge(guild);
+        lavalink.getLink(guild).disconnect();
+        lavalink.getLink(guild).destroy();
     }
 
     public static boolean isConnected(Guild g) {
-        return isEnabled() ?
-                lavalink.getLink(g).getState() == Link.State.CONNECTED :
-                g.getAudioManager().isConnected();
+        return lavalink.getLink(g).getState() == Link.State.CONNECTED;
     }
 
     public static VoiceChannel getConnectedChannel(@Nonnull Guild guild) {

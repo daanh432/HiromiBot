@@ -7,6 +7,7 @@ import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
+import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.List;
 
@@ -44,8 +45,8 @@ public class JoinVoiceChatCommand implements CommandInterface {
                 return;
             }
 
-//            audioManager.openAudioConnection(voiceChannel); // Strictly forbidden with lavalink
             LavalinkUtils.openConnection(voiceChannel);
+            PlayerManager.getInstance().setLastChannel(guild, textChannel);
             EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Joining the voice channel `%s`.", voiceChannel.getName()), false);
             textChannel.sendMessage(embedBuilder.build()).queue();
             return;
