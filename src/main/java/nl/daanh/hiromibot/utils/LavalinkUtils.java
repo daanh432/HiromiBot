@@ -6,7 +6,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 import nl.daanh.hiromibot.Bot;
+import nl.daanh.hiromibot.Config;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import java.net.URI;
@@ -31,7 +34,14 @@ public class LavalinkUtils {
                     SHARD_COUNT,
                     shardId -> Bot.getInstance().getShardManager().getShardById(shardId)
             );
-            lavalink.addNode(new URI("ws://node1.daanhendriks.nl:2333"), "NmkMsMfdun2NU34wQrjEYMtavTwPdTeGKZHt9EAyEyYZrkjchjs6rfZX8BkYF7ULwGD9xGzQG3bQSVaBYWpdX4nbxpPdJR3qQUdwx3fMQ4yfK6fYZ4m6ppv7Z85mNPLzPkBaMxyer5UPUdhLnMk9X2C7PAcQxFp7qd6anc6W4jCyCmHkcdkJstdddJmQRcVdJFRqRkXd6Y4xrfwxUGMUBYgBhZPHznDxYKqCQpRLbcRCZXBk5DkxqpJt9Gt5uj7T");
+
+            JSONArray lavalinkNodes = Config.getInstance().getJSONArray("lavalinkNodes");
+
+            for (int i = 0; i < lavalinkNodes.length(); i++) {
+                JSONObject lavalinkNode = lavalinkNodes.getJSONObject(i);
+                lavalink.addNode(new URI(lavalinkNode.getString("url")), lavalinkNode.getString("password"));
+            }
+
             LavalinkUtils.lavalink = lavalink;
         } catch (URISyntaxException e) {
             e.printStackTrace();
