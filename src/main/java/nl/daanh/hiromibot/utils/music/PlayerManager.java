@@ -22,6 +22,7 @@ import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -95,11 +96,6 @@ public class PlayerManager {
         return musicManager;
     }
 
-    private void play(final Guild guild, final GuildMusicManager musicManager, final AudioTrack track) {
-        connectToFirstVoiceChannel(guild);
-        musicManager.scheduler.queue(track);
-    }
-
     private void skipTrack(final TextChannel channel) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         musicManager.scheduler.nextTrack();
@@ -114,9 +110,14 @@ public class PlayerManager {
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Adding the song %s to the queue.", track.getInfo().title), true);
-                textChannel.sendMessage(embedBuilder.build()).queue();
-                play(textChannel.getGuild(), musicManager, track);
+                try {
+                    musicManager.scheduler.queue(track);
+                    EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Adding the song %s to the queue.", track.getInfo().title), true);
+                    textChannel.sendMessage(embedBuilder.build()).queue();
+                } catch (QueueToBigException e) {
+                    EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed("The queue is full!\nPlease wait with adding songs to the queue till there's some more space.", false);
+                    textChannel.sendMessage(embedBuilder.build()).queue();
+                }
             }
 
             @Override
@@ -125,14 +126,33 @@ public class PlayerManager {
 
                 if (firstTrack == null) {
                     firstTrack = playlist.getTracks().remove(0);
+                } else {
+                    playlist.getTracks().remove(firstTrack);
                 }
 
-                EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Adding the first song %s of the playlist %s to the queue.", firstTrack.getInfo().title, playlist.getName()), true);
-                textChannel.sendMessage(embedBuilder.build()).queue();
+                try {
 
-                play(textChannel.getGuild(), musicManager, firstTrack);
+                    int queueSize = musicManager.scheduler.getQueueSize();
+                    musicManager.scheduler.queue(firstTrack);
 
-                playlist.getTracks().forEach(musicManager.scheduler::queue);
+                    List<AudioTrack> tracks = playlist.getTracks();
+
+                    for (AudioTrack track : tracks) {
+                        try {
+                            musicManager.scheduler.queue(track);
+                        } catch (QueueToBigException e) {
+                            EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Playlist is to big!\nAdding %s songs from the playlist %s to the queue.", musicManager.scheduler.getMaxQueueSize() - queueSize, playlist.getName()), false);
+                            textChannel.sendMessage(embedBuilder.build()).queue();
+                            return;
+                        }
+                    }
+
+                    EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Adding %s songs from the playlist ``%s`` to the queue.", playlist.getTracks().size() + 1, playlist.getName()), true);
+                    textChannel.sendMessage(embedBuilder.build()).queue();
+                } catch (QueueToBigException e) {
+                    EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed("The queue is full!\nPlease wait with adding songs to the queue till there's some more space.", false);
+                    textChannel.sendMessage(embedBuilder.build()).queue();
+                }
             }
 
             @Override
