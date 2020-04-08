@@ -47,7 +47,7 @@ public class JoinVoiceChatCommand implements CommandInterface {
 
             LavalinkUtils.openConnection(voiceChannel);
             PlayerManager.getInstance().setLastChannel(guild, textChannel);
-            EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Joining the voice channel `%s`.", voiceChannel.getName()), false);
+            EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Joining the voice channel `%s`.", voiceChannel.getName()), true);
             textChannel.sendMessage(embedBuilder.build()).queue();
             return;
         }
