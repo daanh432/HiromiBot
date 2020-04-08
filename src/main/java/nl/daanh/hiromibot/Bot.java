@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import nl.daanh.hiromibot.database.SQLiteDataSource;
 import nl.daanh.hiromibot.listeners.CommandListener;
 import nl.daanh.hiromibot.listeners.MusicListener;
 import nl.daanh.hiromibot.utils.EmbedUtils;
@@ -84,8 +83,6 @@ public class Bot {
 
     public static void main(String[] args) throws IOException {
         new Config(new File("settings.json"));
-        SQLiteDataSource sqLiteDataSource = new SQLiteDataSource();
-        sqLiteDataSource.getPrefix(1L);
         instance = new Bot();
     }
 
