@@ -1,4 +1,4 @@
-package nl.daanh.hiromibot;
+package nl.daanh.hiromibot.ratelimiting;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -10,9 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TimerTask;
 
-class RateLimiter {
+public class RateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiter.class);
     private static final Integer timeBetweenMessages = 2; // 2 seconds
     private static final HashMap<Long, RateLimitObject> buffer = new HashMap<>();
@@ -64,22 +63,3 @@ class RateLimiter {
     }
 }
 
-class RateLimitObject {
-    Integer times;
-    private Long time;
-
-    RateLimitObject(Long time, Integer times) {
-        this.time = time;
-        this.times = times;
-    }
-
-    Long getTime() {
-        return time;
-    }
-}
-
-class RateLimitGarbageCollection extends TimerTask {
-    public void run() {
-        RateLimiter.GarbageCollection();
-    }
-}

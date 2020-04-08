@@ -9,6 +9,9 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import nl.daanh.hiromibot.database.SQLiteDataSource;
+import nl.daanh.hiromibot.listeners.CommandListener;
+import nl.daanh.hiromibot.listeners.MusicListener;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
@@ -31,6 +34,12 @@ public class Bot {
     private Bot() {
         try {
             // Load config file
+            final Config config = Config.getInstance();
+
+            // Set utils
+            this.setEmbedTemplate();
+            this.setUnirestSettings(config);
+
             final DefaultShardManagerBuilder shardManagerBuilder = DefaultShardManagerBuilder.create(
                     GatewayIntent.GUILD_BANS,
                     GatewayIntent.GUILD_VOICE_STATES,
@@ -38,15 +47,13 @@ public class Bot {
                     GatewayIntent.GUILD_MESSAGE_REACTIONS
             );
             shardManagerBuilder.setChunkingFilter(ChunkingFilter.NONE);
-            final Config config = new Config(new File("settings.json"));
-            final Listener listener = new Listener();
 
-            // Set utils
-            setEmbedTemplate();
-            setUnirestSettings(config);
 
-            LavalinkUtils lavalinkUtils = new LavalinkUtils(config.getString("token"));
-            JdaLavalink lavalink = LavalinkUtils.getLavalink();
+            // Create lavalink instances
+            final LavalinkUtils lavalinkUtils = new LavalinkUtils(config.getString("token"));
+            final JdaLavalink lavalink = LavalinkUtils.getLavalink();
+            shardManagerBuilder.addEventListeners(lavalink);
+            shardManagerBuilder.setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor());
 
             // Build JDA
             shardManagerBuilder.setToken(config.getString("token"))
@@ -58,17 +65,15 @@ public class Bot {
                     // Set activity of Discord user
                     .setActivity(Activity.listening(config.getString("activity")))
                     // Add listeners
-                    .addEventListeners(listener)
-                    // Lavalink setup
-                    .addEventListeners(lavalink)
-                    .setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor())
+                    .addEventListeners(new CommandListener())
+                    .addEventListeners(new MusicListener())
                     // Set shard count
                     .setShardsTotal(SHARD_COUNT);
 
             shardManager = shardManagerBuilder.build();
 
             LOGGER.info("Bot has started with " + shardManager.getShards().size() + " shards on " + shardManager.getGuilds().size() + " guilds.");
-        } catch (LoginException | IOException e) {
+        } catch (LoginException e) {
             e.printStackTrace();
         }
     }
@@ -77,7 +82,10 @@ public class Bot {
         return instance;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        new Config(new File("settings.json"));
+        SQLiteDataSource sqLiteDataSource = new SQLiteDataSource();
+        sqLiteDataSource.getPrefix(1L);
         instance = new Bot();
     }
 

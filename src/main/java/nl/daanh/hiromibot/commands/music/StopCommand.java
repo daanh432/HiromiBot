@@ -7,8 +7,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
-import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.List;
 
@@ -26,8 +26,7 @@ public class StopCommand implements CommandInterface {
             return;
         }
 
-        PlayerManager playerManager = PlayerManager.getInstance();
-        playerManager.purge(guild);
+        LavalinkUtils.closeConnection(guild);
 
         EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed("Stopping and clearing the queue", true);
         textChannel.sendMessage(embedBuilder.build()).queue();
