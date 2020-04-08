@@ -13,3 +13,4 @@ bin
 /src/main/java/nl/daanh/hiromibot/Secrets.java
 /guildConfigs/
 /settings.json
+/database.db
