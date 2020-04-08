@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -86,6 +87,7 @@ public class PlayerManager {
         guildMusicManager.scheduler.getQueue().clear();
         guildMusicManager.player.stopTrack();
         guildMusicManager.player.setPaused(false);
+        LavalinkUtils.closeConnection(guild);
     }
 
     public void skipTrack(final Guild guild) {

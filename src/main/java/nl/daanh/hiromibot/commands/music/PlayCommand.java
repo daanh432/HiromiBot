@@ -1,11 +1,13 @@
 package nl.daanh.hiromibot.commands.music;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
 
@@ -23,8 +25,12 @@ public class PlayCommand implements CommandInterface {
         String input = String.join(" ", args);
 
         if (selfMember.getVoiceState() != null && !selfMember.getVoiceState().inVoiceChannel()) {
-            channel.sendMessage(EmbedUtils.defaultMusicEmbed("Well. If you want me to play music you are going to have to let me join your channel.", false).build()).queue();
-            return;
+            if (member.getVoiceState() != null && member.getVoiceState().inVoiceChannel() && member.getVoiceState().getChannel() != null && selfMember.hasPermission(member.getVoiceState().getChannel(), Permission.VOICE_CONNECT)) {
+                LavalinkUtils.openConnection(member.getVoiceState().getChannel());
+            } else {
+                channel.sendMessage(EmbedUtils.defaultMusicEmbed("I'd love to join you. But I can't find you! *sobs*", false).build()).queue();
+                return;
+            }
         }
 
         if (!RandomUtils.inSameVoiceChannel(member, selfMember)

@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.event.AudioEventAdapterWrapped;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +20,14 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
     private static final int QUEUE_SIZE = 50;
     private final IPlayer player;
     private final BlockingQueue<AudioTrack> queue;
+    private final GuildMusicManager guildMusicManager;
 
     /**
      * @param player The audio player this scheduler uses
      */
-    public TrackScheduler(IPlayer player) {
+    public TrackScheduler(IPlayer player, GuildMusicManager guildMusicManager) {
         this.player = player;
+        this.guildMusicManager = guildMusicManager;
         this.queue = new LinkedBlockingQueue<>();
     }
 
@@ -67,7 +70,11 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
     public void nextTrack() {
         // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
         // giving null to startTrack, which is a valid argument and will simply stop the player.
-        player.playTrack(queue.poll());
+        if (queue.size() > 0) {
+            player.playTrack(queue.poll());
+            return;
+        }
+        LavalinkUtils.closeConnection(this.guildMusicManager.getGuild());
     }
 
     @Override

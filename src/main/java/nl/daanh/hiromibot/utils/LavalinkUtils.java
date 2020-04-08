@@ -35,6 +35,8 @@ public class LavalinkUtils {
                     shardId -> Bot.getInstance().getShardManager().getShardById(shardId)
             );
 
+            LavalinkUtils.token = null;
+
             JSONArray lavalinkNodes = Config.getInstance().getJSONArray("lavalinkNodes");
 
             for (int i = 0; i < lavalinkNodes.length(); i++) {

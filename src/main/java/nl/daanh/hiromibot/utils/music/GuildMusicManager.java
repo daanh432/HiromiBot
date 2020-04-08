@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -20,6 +21,8 @@ public class GuildMusicManager {
      */
     public final TrackScheduler scheduler;
 
+    private final Guild guild;
+
     private TextChannel lastChannel;
 
     /**
@@ -27,15 +30,21 @@ public class GuildMusicManager {
      *
      * @param guild the guild for which the guild music manager should be created
      */
-    public GuildMusicManager(Guild guild) {
+    public GuildMusicManager(@Nonnull Guild guild) {
+        this.guild = guild;
         this.player = LavalinkUtils.getLavalink().getLink(guild).getPlayer();
-        scheduler = new TrackScheduler(this.player);
+        scheduler = new TrackScheduler(this.player, this);
         player.addListener(scheduler);
     }
 
     @Nullable
     public TextChannel getLastChannel() {
         return this.lastChannel;
+    }
+
+    @Nonnull
+    public Guild getGuild() {
+        return this.guild;
     }
 
     public void setLastChannel(TextChannel channel) {
