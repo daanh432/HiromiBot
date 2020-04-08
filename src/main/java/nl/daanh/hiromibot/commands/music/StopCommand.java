@@ -50,6 +50,6 @@ public class StopCommand implements CommandInterface {
 
     @Override
     public List<String> getAliases() {
-        return List.of("purge", "clear");
+        return List.of("purge", "clear", "leave", "disconnect");
     }
 }

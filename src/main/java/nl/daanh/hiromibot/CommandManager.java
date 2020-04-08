@@ -54,7 +54,7 @@ public class CommandManager {
         // Music commands
         if (config.getBoolean("loadMusicCommands")) {
             addCommand(new JoinVoiceChatCommand());
-            addCommand(new LeaveVoiceChatCommand());
+//            addCommand(new LeaveVoiceChatCommand()); // Made this an alias of the stop command
             addCommand(new PlayCommand());
             addCommand(new StopCommand());
             addCommand(new QueueCommand(eventWaiter));
