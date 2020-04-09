@@ -18,6 +18,8 @@
 
 package nl.daanh.hiromibot.utils;
 
+import nl.daanh.hiromibot.exceptions.HiromiApiAuthException;
+import nl.daanh.hiromibot.exceptions.HiromiApiException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -60,7 +62,7 @@ public class WebUtils {
         }
     }
 
-    static JSONObject fetchJsonFromUrlApi(String url) {
+    public static JSONObject fetchJsonFromUrlApi(String url) {
         Request request = defaultApiRequest(url).build();
         try (Response response = client.newCall(request).execute()) {
             if (response.code() == 200 && response.body() != null) {
@@ -77,28 +79,7 @@ public class WebUtils {
         }
     }
 
-    static Request.Builder postToUrlApi(String url) {
+    public static Request.Builder postToUrlApi(String url) {
         return new Request.Builder().url(url).addHeader("User-Agent", userAgent).addHeader("Authorization", hiromiApiToken);
-    }
-}
-
-class HiromiApiException extends RuntimeException {
-    @Override
-    public String getMessage() {
-        return "Some unknown error occurred in the Hiromi API connection.";
-    }
-}
-
-class HiromiApiAuthException extends HiromiApiException {
-    @Override
-    public String getMessage() {
-        return "The token for the Hiromi API is not valid. Or another error happened during during authentication.";
-    }
-}
-
-class HiromiApiTooManyRequestsException extends HiromiApiException {
-    @Override
-    public String getMessage() {
-        return "You're being rate limited by the Hiromi API";
     }
 }
