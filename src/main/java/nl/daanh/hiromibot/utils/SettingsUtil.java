@@ -18,6 +18,8 @@
 
 package nl.daanh.hiromibot.utils;
 
+import nl.daanh.hiromibot.exceptions.HiromiApiAuthException;
+import nl.daanh.hiromibot.exceptions.HiromiApiTooManyRequestsException;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
