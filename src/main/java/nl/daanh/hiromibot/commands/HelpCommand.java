@@ -20,9 +20,9 @@ package nl.daanh.hiromibot.commands;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.CommandManager;
+import nl.daanh.hiromibot.database.DatabaseManager;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
-import nl.daanh.hiromibot.utils.SettingsUtil;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class HelpCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {
         List<String> args = ctx.getArgs();
-        Long guildId = ctx.getGuild().getIdLong();
+        long guildId = ctx.getGuild().getIdLong();
         TextChannel channel = ctx.getChannel();
 
         if (args.isEmpty()) {
@@ -44,7 +44,7 @@ public class HelpCommand implements CommandInterface {
             builder.append("List of commands:\n");
             commandManager.getCommands().stream().map(CommandInterface::getInvoke).forEach(
                     (it) -> builder.append("`")
-                            .append(SettingsUtil.getPrefix(guildId))
+                            .append(DatabaseManager.instance.getPrefix(guildId))
                             .append(it).append("`\n")
             );
             channel.sendMessage(builder.toString()).queue();

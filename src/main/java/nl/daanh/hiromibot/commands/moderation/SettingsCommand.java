@@ -22,10 +22,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import nl.daanh.hiromibot.database.DatabaseManager;
 import nl.daanh.hiromibot.listeners.VoiceChatListener;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
-import nl.daanh.hiromibot.utils.SettingsUtil;
 
 import java.util.List;
 
@@ -49,16 +49,16 @@ public class SettingsCommand implements CommandInterface {
         TextChannel channel = ctx.getChannel();
         switch (args.get(0).toLowerCase()) {
             case "prefix":
-                channel.sendMessage(String.format("The prefix of this server is ``%s``", SettingsUtil.getPrefix(guild.getIdLong()))).queue();
+                channel.sendMessage(String.format("The prefix of this server is ``%s``", DatabaseManager.instance.getPrefix(guild.getIdLong()))).queue();
                 break;
             case "musicenabled":
             case "music":
-                channel.sendMessage(String.format("Music is %s on this server.", SettingsUtil.getMusicEnabled(guild.getIdLong()) ? "enabled" : "disabled")).queue();
+                channel.sendMessage(String.format("Music is %s on this server.", DatabaseManager.instance.getMusicEnabled(guild.getIdLong()) ? "enabled" : "disabled")).queue();
                 break;
             case "funenabled":
             case "funcategory":
             case "fun":
-                channel.sendMessage(String.format("Fun commands are %s on this server.", SettingsUtil.getFunEnabled(guild.getIdLong()) ? "enabled" : "disabled")).queue();
+                channel.sendMessage(String.format("Fun commands are %s on this server.", DatabaseManager.instance.getFunEnabled(guild.getIdLong()) ? "enabled" : "disabled")).queue();
                 break;
             case "jointocreatechannel":
             case "createchannel":
@@ -81,17 +81,17 @@ public class SettingsCommand implements CommandInterface {
         Member member = ctx.getMember();
         switch (args.get(0).toLowerCase()) {
             case "prefix":
-                SettingsUtil.setPrefix(guild.getIdLong(), args.get(1));
+                DatabaseManager.instance.setPrefix(guild.getIdLong(), args.get(1));
                 channel.sendMessage(String.format("Changed prefix to ``%s``", args.get(1))).queue();
                 break;
             case "musicenabled":
             case "music":
                 String musicEnabled = args.get(1);
                 if (musicEnabled.equals("on") || musicEnabled.equals("true") || musicEnabled.equals("enabled") || musicEnabled.equals("1") || musicEnabled.equals("enable")) {
-                    SettingsUtil.setMusicEnabled(guild.getIdLong(), true);
+                    DatabaseManager.instance.setMusicEnabled(guild.getIdLong(), true);
                     channel.sendMessage("Enabled music on this server.").queue();
                 } else {
-                    SettingsUtil.setMusicEnabled(guild.getIdLong(), false);
+                    DatabaseManager.instance.setMusicEnabled(guild.getIdLong(), false);
                     channel.sendMessage("Disabled music on this server.").queue();
                 }
                 break;
@@ -100,10 +100,10 @@ public class SettingsCommand implements CommandInterface {
             case "fun":
                 String funEnabled = args.get(1);
                 if (funEnabled.equals("on") || funEnabled.equals("true") || funEnabled.equals("enabled") || funEnabled.equals("1") || funEnabled.equals("enable")) {
-                    SettingsUtil.setFunEnabled(guild.getIdLong(), true);
+                    DatabaseManager.instance.setFunEnabled(guild.getIdLong(), true);
                     channel.sendMessage("Enabled fun commands on this server.").queue();
                 } else {
-                    SettingsUtil.setFunEnabled(guild.getIdLong(), false);
+                    DatabaseManager.instance.setFunEnabled(guild.getIdLong(), false);
                     channel.sendMessage("Disabled fun commands on this server.").queue();
                 }
                 break;

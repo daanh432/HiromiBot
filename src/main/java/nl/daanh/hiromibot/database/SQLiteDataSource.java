@@ -3,15 +3,18 @@ package nl.daanh.hiromibot.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.objects.CommandInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 public class SQLiteDataSource implements DatabaseManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(SQLiteDataSource.class);
@@ -105,6 +108,32 @@ public class SQLiteDataSource implements DatabaseManager {
 
     @Override
     public void setFunEnabled(long guildId, boolean enabled) {
+
+    }
+
+    @Override
+    public boolean getModerationEnabled(long guildId) {
+        return false;
+    }
+
+    @Override
+    public void setModerationEnabled(long guildId, boolean enabled) {
+
+    }
+
+    @Override
+    public List<CommandInterface.CATEGORY> getEnabledCategories(long guildId) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Long getCreateVoiceChannelId(long guildId) {
+        return null;
+    }
+
+    @Override
+    public void setCreateVoiceChannelId(long guildId, long voiceChannelId) {
 
     }
 }
