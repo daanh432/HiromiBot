@@ -1,3 +1,21 @@
+/*
+ * HiromiBot, a multipurpose open source Discord bot
+ * Copyright (c) 2019 - 2020 daanh432
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package nl.daanh.hiromibot;
 
 import lavalink.client.io.jda.JdaLavalink;
@@ -11,6 +29,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import nl.daanh.hiromibot.listeners.CommandListener;
 import nl.daanh.hiromibot.listeners.MusicListener;
+import nl.daanh.hiromibot.listeners.VoiceChatListener;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
@@ -66,6 +85,7 @@ public class Bot {
                     // Add listeners
                     .addEventListeners(new CommandListener())
                     .addEventListeners(new MusicListener())
+                    .addEventListeners(VoiceChatListener.getInstance())
                     // Set shard count
                     .setShardsTotal(SHARD_COUNT);
 

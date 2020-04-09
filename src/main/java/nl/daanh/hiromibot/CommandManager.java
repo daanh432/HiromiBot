@@ -1,3 +1,21 @@
+/*
+ * HiromiBot, a multipurpose open source Discord bot
+ * Copyright (c) 2019 - 2020 daanh432
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package nl.daanh.hiromibot;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -54,7 +72,7 @@ public class CommandManager {
         // Music commands
         if (config.getBoolean("loadMusicCommands")) {
             addCommand(new JoinVoiceChatCommand());
-            addCommand(new LeaveVoiceChatCommand());
+//            addCommand(new LeaveVoiceChatCommand()); // Made this an alias of the stop command
             addCommand(new PlayCommand());
             addCommand(new StopCommand());
             addCommand(new QueueCommand(eventWaiter));
