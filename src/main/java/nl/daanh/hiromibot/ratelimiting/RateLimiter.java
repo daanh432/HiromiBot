@@ -31,7 +31,7 @@ import java.util.Iterator;
 
 public class RateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiter.class);
-    private static final Integer timeBetweenMessages = 2; // 2 seconds
+    private static final int timeBetweenMessages = 2; // 2 seconds
     private static final HashMap<Long, RateLimitObject> buffer = new HashMap<>();
 
     private static long CurrentTime() {

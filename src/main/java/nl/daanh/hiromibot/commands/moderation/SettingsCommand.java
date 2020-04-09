@@ -19,8 +19,10 @@
 package nl.daanh.hiromibot.commands.moderation;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import nl.daanh.hiromibot.listeners.VoiceChatListener;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.SettingsUtil;
@@ -32,20 +34,19 @@ public class SettingsCommand implements CommandInterface {
     public void handle(CommandContext ctx) {
         TextChannel channel = ctx.getChannel();
         List<String> args = ctx.getArgs();
-        GuildMessageReceivedEvent event = ctx.getEvent();
 
         if (args.isEmpty()) {
             channel.sendMessage("WIP").queue();
         } else if (args.size() == 1) {
-            SettingsGetterHandler(args, event);
+            SettingsGetterHandler(args, ctx);
         } else {
-            SettingsSetterHandler(args, event);
+            SettingsSetterHandler(args, ctx);
         }
     }
 
-    private void SettingsGetterHandler(List<String> args, GuildMessageReceivedEvent event) {
-        Guild guild = event.getGuild();
-        TextChannel channel = event.getChannel();
+    private void SettingsGetterHandler(List<String> args, CommandContext ctx) {
+        Guild guild = ctx.getGuild();
+        TextChannel channel = ctx.getChannel();
         switch (args.get(0).toLowerCase()) {
             case "prefix":
                 channel.sendMessage(String.format("The prefix of this server is ``%s``", SettingsUtil.getPrefix(guild.getIdLong()))).queue();
@@ -59,15 +60,25 @@ public class SettingsCommand implements CommandInterface {
             case "fun":
                 channel.sendMessage(String.format("Fun commands are %s on this server.", SettingsUtil.getFunEnabled(guild.getIdLong()) ? "enabled" : "disabled")).queue();
                 break;
+            case "jointocreatechannel":
+            case "createchannel":
+                VoiceChannel getCreateChannel = VoiceChatListener.getInstance().getCreateChannel(guild);
+                if (getCreateChannel == null) {
+                    channel.sendMessage(String.format("The join to create channel is not set.\nTo set this to your current channel use:\n``%s``", ctx.getMessage().getContentRaw() + " set")).queue();
+                    break;
+                }
+                channel.sendMessage(String.format("The join to create channel is <#%s>", getCreateChannel.getIdLong())).queue();
+                break;
             default:
                 channel.sendMessage("This setting is not found.\n" + this.getHelp()).queue();
                 break;
         }
     }
 
-    private void SettingsSetterHandler(List<String> args, GuildMessageReceivedEvent event) {
-        Guild guild = event.getGuild();
-        TextChannel channel = event.getChannel();
+    private void SettingsSetterHandler(List<String> args, CommandContext ctx) {
+        Guild guild = ctx.getGuild();
+        TextChannel channel = ctx.getChannel();
+        Member member = ctx.getMember();
         switch (args.get(0).toLowerCase()) {
             case "prefix":
                 SettingsUtil.setPrefix(guild.getIdLong(), args.get(1));
@@ -94,6 +105,13 @@ public class SettingsCommand implements CommandInterface {
                 } else {
                     SettingsUtil.setFunEnabled(guild.getIdLong(), false);
                     channel.sendMessage("Disabled fun commands on this server.").queue();
+                }
+                break;
+            case "jointocreatechannel":
+            case "createchannel":
+                if (member.getVoiceState() != null && member.getVoiceState().inVoiceChannel() && member.getVoiceState().getChannel() != null) {
+                    VoiceChatListener.getInstance().setCreateChannel(guild, member.getVoiceState().getChannel());
+                    channel.sendMessage(String.format("I've set the join to create channel to: ``<#%s>``", member.getVoiceState().getChannel().getIdLong())).queue();
                 }
                 break;
             default:

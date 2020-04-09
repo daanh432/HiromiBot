@@ -19,15 +19,15 @@
 package nl.daanh.hiromibot.ratelimiting;
 
 public class RateLimitObject {
-    Integer times;
+    public Integer times;
     private Long time;
 
-    RateLimitObject(Long time, Integer times) {
+    public RateLimitObject(Long time, Integer times) {
         this.time = time;
         this.times = times;
     }
 
-    Long getTime() {
+    public Long getTime() {
         return time;
     }
 }

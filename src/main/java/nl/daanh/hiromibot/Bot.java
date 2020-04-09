@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import nl.daanh.hiromibot.listeners.CommandListener;
 import nl.daanh.hiromibot.listeners.MusicListener;
+import nl.daanh.hiromibot.listeners.VoiceChatListener;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
@@ -84,6 +85,7 @@ public class Bot {
                     // Add listeners
                     .addEventListeners(new CommandListener())
                     .addEventListeners(new MusicListener())
+                    .addEventListeners(VoiceChatListener.getInstance())
                     // Set shard count
                     .setShardsTotal(SHARD_COUNT);
 
