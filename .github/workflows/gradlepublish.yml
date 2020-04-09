@@ -21,7 +21,6 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          gradle build
           gradle shadowJar
 
       - name: Publish to GitHub Packages
