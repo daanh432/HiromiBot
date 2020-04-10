@@ -175,7 +175,8 @@ public class APIDataSource implements DatabaseManager {
     @Override
     public Long getCreateVoiceChannelId(long guildId) {
         try {
-            return Long.parseLong(getKey(guildId, "createVoiceChannelId"));
+            String longString = getKey(guildId, "createVoiceChannelId");
+            return Long.parseLong(longString);
         } catch (NumberFormatException e) {
             return null;
         }

@@ -21,9 +21,7 @@ package nl.daanh.hiromibot.commands.moderation;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import nl.daanh.hiromibot.database.DatabaseManager;
-import nl.daanh.hiromibot.listeners.VoiceChatListener;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 
@@ -62,12 +60,12 @@ public class SettingsCommand implements CommandInterface {
                 break;
             case "jointocreatechannel":
             case "createchannel":
-                VoiceChannel getCreateChannel = VoiceChatListener.getInstance().getCreateChannel(guild);
+                Long getCreateChannel = DatabaseManager.instance.getCreateVoiceChannelId(guild.getIdLong());
                 if (getCreateChannel == null) {
                     channel.sendMessage(String.format("The join to create channel is not set.\nTo set this to your current channel use:\n``%s``", ctx.getMessage().getContentRaw() + " set")).queue();
                     break;
                 }
-                channel.sendMessage(String.format("The join to create channel is <#%s>", getCreateChannel.getIdLong())).queue();
+                channel.sendMessage(String.format("The join to create channel is ``<#%s>``", getCreateChannel)).queue();
                 break;
             default:
                 channel.sendMessage("This setting is not found.\n" + this.getHelp()).queue();
@@ -110,7 +108,7 @@ public class SettingsCommand implements CommandInterface {
             case "jointocreatechannel":
             case "createchannel":
                 if (member.getVoiceState() != null && member.getVoiceState().inVoiceChannel() && member.getVoiceState().getChannel() != null) {
-                    VoiceChatListener.getInstance().setCreateChannel(guild, member.getVoiceState().getChannel());
+                    DatabaseManager.instance.setCreateVoiceChannelId(guild.getIdLong(), member.getVoiceState().getChannel().getIdLong());
                     channel.sendMessage(String.format("I've set the join to create channel to: ``<#%s>``", member.getVoiceState().getChannel().getIdLong())).queue();
                 }
                 break;
