@@ -1,5 +1,5 @@
 # WARNING: Readme is work in progress.
-Build status: [![CircleCI](https://circleci.com/gh/daanh432/HiromiBot/tree/master.svg?style=svg)](https://circleci.com/gh/daanh432/HiromiBot/tree/master)
+Build status: ![Gradle Package](https://github.com/daanh432/HiromiBot/workflows/Gradle%20Package/badge.svg?branch=master)
 
 # Hiromi Bot
 
