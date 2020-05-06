@@ -1,6 +1,3 @@
-# WARNING: Readme is work in progress.
-Build status: [![CircleCI](https://circleci.com/gh/daanh432/HiromiBot/tree/master.svg?style=svg)](https://circleci.com/gh/daanh432/HiromiBot/tree/master)
-
 # Hiromi Bot
 
 Hiromi is a open source Discord Bot. [Discord](https://discordapp.com/) is a VoIP platform commonly used by gamers... W.I.P.
