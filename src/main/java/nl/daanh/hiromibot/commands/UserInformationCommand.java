@@ -52,7 +52,7 @@ public class UserInformationCommand implements CommandInterface {
         String joinedArgs = String.join("", args);
 
         if (args.isEmpty()) {
-            channel.sendMessage(generateEmbed(member.getUser(), member)).queue();
+            channel.sendMessage(this.generateEmbed(member.getUser(), member)).queue();
             return;
         }
 
@@ -63,7 +63,7 @@ public class UserInformationCommand implements CommandInterface {
             return;
         }
 
-        channel.sendMessage(generateEmbed(foundMembers.get(0).getUser(), foundMembers.get(0))).queue();
+        channel.sendMessage(this.generateEmbed(foundMembers.get(0).getUser(), foundMembers.get(0))).queue();
     }
 
     @Override

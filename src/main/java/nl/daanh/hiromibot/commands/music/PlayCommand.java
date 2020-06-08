@@ -63,8 +63,8 @@ public class PlayCommand implements CommandInterface {
             return;
         }
 
-        if (!isUrl(input)) {
-            String ytSearched = searchYouTube(input);
+        if (!this.isUrl(input)) {
+            String ytSearched = this.searchYouTube(input);
 
             if (ytSearched == null) {
                 EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Please specify a valid YouTube or SoundCloud link. %s", this.getUsage()), false);

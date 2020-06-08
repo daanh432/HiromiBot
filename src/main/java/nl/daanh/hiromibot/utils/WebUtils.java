@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class WebUtils {
-    public static OkHttpClient client = new OkHttpClient();
+    public static final OkHttpClient client = new OkHttpClient();
 
     private static String userAgent = "";
     private static String hiromiApiToken = "";

@@ -32,8 +32,7 @@ import java.util.stream.Collectors;
 public class UnbanCommand implements CommandInterface {
     private boolean isCorrectUser(Guild.Ban ban, String arg) {
         User bannedUser = ban.getUser();
-        return bannedUser.getName().equalsIgnoreCase(arg) || bannedUser.getId().equalsIgnoreCase(arg)
-                || String.format("%#s", bannedUser).equalsIgnoreCase(arg);
+        return bannedUser.getName().equalsIgnoreCase(arg) || bannedUser.getId().equalsIgnoreCase(arg) || String.format("%#s", bannedUser).equalsIgnoreCase(arg);
     }
 
     @Override
@@ -61,7 +60,7 @@ public class UnbanCommand implements CommandInterface {
         }
 
         guild.retrieveBanList().queue(bans -> {
-            List<User> goodUsers = bans.stream().filter(ban -> isCorrectUser(ban, joinedArgs)).map(Guild.Ban::getUser).collect(Collectors.toList());
+            List<User> goodUsers = bans.stream().filter(ban -> this.isCorrectUser(ban, joinedArgs)).map(Guild.Ban::getUser).collect(Collectors.toList());
 
             if (goodUsers.isEmpty()) {
                 channel.sendMessage(String.format("The user %s is not found or banned.", joinedArgs)).queue();

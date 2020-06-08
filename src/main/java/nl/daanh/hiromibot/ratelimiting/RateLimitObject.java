@@ -19,8 +19,8 @@
 package nl.daanh.hiromibot.ratelimiting;
 
 public class RateLimitObject {
-    public Integer times;
-    private Long time;
+    private Integer times;
+    private final Long time;
 
     public RateLimitObject(Long time, Integer times) {
         this.time = time;
@@ -28,6 +28,14 @@ public class RateLimitObject {
     }
 
     public Long getTime() {
-        return time;
+        return this.time;
+    }
+
+    public Integer getTimes() {
+        return this.times;
+    }
+
+    public void incrementTimes() {
+        this.times++;
     }
 }

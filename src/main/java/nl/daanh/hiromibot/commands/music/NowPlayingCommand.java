@@ -51,8 +51,8 @@ public class NowPlayingCommand implements CommandInterface {
                 trackInfo.title,
                 trackInfo.uri,
                 playerManager.isPaused(guild) ? "\u23F8" : "▶",
-                formatTime(playingTrack.getPosition()),
-                formatTime(playingTrack.getDuration())
+                this.formatTime(playingTrack.getPosition()),
+                this.formatTime(playingTrack.getDuration())
         ), true).build()).queue();
     }
 

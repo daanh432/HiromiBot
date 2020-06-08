@@ -27,7 +27,7 @@ public class MySQLDataSource implements DatabaseManager {
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         config.setPoolName("MysqlDataPool");
         config.setMaximumPoolSize(10);
-        ds = new HikariDataSource(config);
+        this.ds = new HikariDataSource(config);
 
         try (final Connection connection = this.getConnection()) {
             final Statement statement = connection.createStatement();
@@ -46,7 +46,7 @@ public class MySQLDataSource implements DatabaseManager {
     }
 
     private Connection getConnection() throws SQLException {
-        return ds.getConnection();
+        return this.ds.getConnection();
     }
 
     private boolean settingExists(long guildId, String setting) {

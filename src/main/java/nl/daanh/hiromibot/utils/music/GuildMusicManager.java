@@ -51,8 +51,8 @@ public class GuildMusicManager {
     public GuildMusicManager(@Nonnull Guild guild) {
         this.guild = guild;
         this.player = LavalinkUtils.getLavalink().getLink(guild).getPlayer();
-        scheduler = new TrackScheduler(this.player, this);
-        player.addListener(scheduler);
+        this.scheduler = new TrackScheduler(this.player, this);
+        this.player.addListener(this.scheduler);
     }
 
     @Nullable

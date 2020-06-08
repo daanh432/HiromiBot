@@ -36,9 +36,9 @@ public class SettingsCommand implements CommandInterface {
         if (args.isEmpty()) {
             channel.sendMessage("WIP").queue();
         } else if (args.size() == 1) {
-            SettingsGetterHandler(args, ctx);
+            this.SettingsGetterHandler(args, ctx);
         } else {
-            SettingsSetterHandler(args, ctx);
+            this.SettingsSetterHandler(args, ctx);
         }
     }
 
@@ -128,7 +128,7 @@ public class SettingsCommand implements CommandInterface {
 
     @Override
     public CATEGORY getCategory() {
-        return CATEGORY.MODERATION;
+        return CATEGORY.OTHER;
     }
 
     @Override

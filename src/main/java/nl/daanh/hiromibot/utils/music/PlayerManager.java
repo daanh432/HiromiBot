@@ -52,14 +52,14 @@ public class PlayerManager {
         this.musicManagers = new HashMap<>();
 
         this.playerManager = new DefaultAudioPlayerManager();
-        playerManager.registerSourceManager(new YoutubeAudioSourceManager());
-        playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
-        playerManager.registerSourceManager(new BandcampAudioSourceManager());
-        playerManager.registerSourceManager(new VimeoAudioSourceManager());
-        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
-        playerManager.registerSourceManager(new BeamAudioSourceManager());
-        playerManager.registerSourceManager(new HttpAudioSourceManager());
-        playerManager.registerSourceManager(new LocalAudioSourceManager());
+        this.playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+        this.playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
+        this.playerManager.registerSourceManager(new BandcampAudioSourceManager());
+        this.playerManager.registerSourceManager(new VimeoAudioSourceManager());
+        this.playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        this.playerManager.registerSourceManager(new BeamAudioSourceManager());
+        this.playerManager.registerSourceManager(new HttpAudioSourceManager());
+        this.playerManager.registerSourceManager(new LocalAudioSourceManager());
     }
 
     public static synchronized PlayerManager getInstance() {
@@ -107,27 +107,27 @@ public class PlayerManager {
     }
 
     public void skipTrack(final Guild guild) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(guild);
+        GuildMusicManager musicManager = this.getGuildAudioPlayer(guild);
         musicManager.scheduler.nextTrack();
     }
 
     private synchronized GuildMusicManager getGuildAudioPlayer(final Guild guild) {
         long guildId = guild.getIdLong();
-        GuildMusicManager musicManager = musicManagers.get(guildId);
+        GuildMusicManager musicManager = this.musicManagers.get(guildId);
 
         if (musicManager == null) {
             musicManager = new GuildMusicManager(guild);
-            musicManagers.put(guildId, musicManager);
+            this.musicManagers.put(guildId, musicManager);
         }
 
         return musicManager;
     }
 
     public void loadAndPlay(final TextChannel textChannel, final String trackUrl) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(textChannel.getGuild());
+        GuildMusicManager musicManager = this.getGuildAudioPlayer(textChannel.getGuild());
         this.setLastChannel(textChannel.getGuild(), textChannel);
 
-        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+        this.playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 try {

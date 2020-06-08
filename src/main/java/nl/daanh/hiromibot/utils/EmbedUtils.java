@@ -26,7 +26,7 @@ import java.awt.*;
 import java.util.function.Supplier;
 
 public class EmbedUtils {
-    private static Logger LOGGER = LoggerFactory.getLogger(EmbedUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmbedUtils.class);
     private static Supplier<EmbedBuilder> embedBuilderSupplier = EmbedBuilder::new;
 
     /**

@@ -58,8 +58,4 @@ public interface CommandContextInterface {
     default ShardManager getShardManager() {
         return this.getJDA().getShardManager();
     }
-
-    default JdaLink getLavalink() {
-        return LavalinkUtils.getLavalink().getLink(this.getGuild());
-    }
 }

@@ -39,10 +39,10 @@ public class SQLiteDataSource implements DatabaseManager {
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        ds = new HikariDataSource(config);
-        ds.setConnectionTimeout(3000L);
+        this.ds = new HikariDataSource(config);
+        this.ds.setConnectionTimeout(3000L);
 
-        try (final Statement statement = getConnection().createStatement()) {
+        try (final Statement statement = this.getConnection().createStatement()) {
             // language=SQLite
             statement.execute("CREATE TABLE IF NOT EXISTS guild_settings (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -58,7 +58,7 @@ public class SQLiteDataSource implements DatabaseManager {
     }
 
     private Connection getConnection() throws SQLException {
-        return ds.getConnection();
+        return this.ds.getConnection();
     }
 
     private boolean settingExists(long guildId, String setting) {

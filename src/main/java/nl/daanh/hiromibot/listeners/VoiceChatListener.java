@@ -79,10 +79,10 @@ public class VoiceChatListener extends ListenerAdapter {
     }
 
     private void checkForDelete(@Nonnull Guild guild, @Nonnull VoiceChannel channel) {
-        if (managedChannels.contains(channel)) {
+        if (this.managedChannels.contains(channel)) {
             if (channel.getMembers().size() == 0 && guild.getSelfMember().hasPermission(channel, Permission.MANAGE_CHANNEL)) {
                 channel.delete().queue();
-                managedChannels.remove(channel);
+                this.managedChannels.remove(channel);
                 LOGGER.debug("Deleting channel");
             }
         }
@@ -95,9 +95,9 @@ public class VoiceChatListener extends ListenerAdapter {
                 String channelName = String.format("%s's Channel", member.getEffectiveName());
                 if (this.voiceChatGarbageCollection.canRun(guild)) {
                     if (channel.getParent() != null && guild.getSelfMember().hasPermission(channel.getParent(), Permission.MANAGE_CHANNEL)) {
-                        channel.getParent().createVoiceChannel(channelName).queue(newChannel -> moveUserToChannel(guild, member, newChannel));
+                        channel.getParent().createVoiceChannel(channelName).queue(newChannel -> this.moveUserToChannel(guild, member, newChannel));
                     } else if (guild.getSelfMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-                        guild.createVoiceChannel(channelName).queue(newChannel -> moveUserToChannel(guild, member, newChannel));
+                        guild.createVoiceChannel(channelName).queue(newChannel -> this.moveUserToChannel(guild, member, newChannel));
                     }
                 }
             }
@@ -106,7 +106,7 @@ public class VoiceChatListener extends ListenerAdapter {
 
     private void moveUserToChannel(@Nonnull Guild guild, @Nonnull Member member, @Nonnull VoiceChannel newChannel) {
         LOGGER.debug("Created new voice channel");
-        managedChannels.add(newChannel);
+        this.managedChannels.add(newChannel);
         if (guild.getSelfMember().hasPermission(Permission.VOICE_MOVE_OTHERS)) {
             guild.moveVoiceMember(member, newChannel).queue();
             LOGGER.debug("Moving member to voice channel");
@@ -125,10 +125,10 @@ class VoiceChatGarbageCollection {
             @Override
             public void run() {
                 LOGGER.debug("Running voice chat listener garbage collection");
-                Iterator<Long> iter = rateLimitMap.keySet().iterator();
+                Iterator<Long> iter = VoiceChatGarbageCollection.this.rateLimitMap.keySet().iterator();
                 while (iter.hasNext()) {
                     Long guildId = iter.next();
-                    RateLimitObject rateLimitObject = rateLimitMap.get(guildId);
+                    RateLimitObject rateLimitObject = VoiceChatGarbageCollection.this.rateLimitMap.get(guildId);
 
                     if (Instant.now().getEpochSecond() > rateLimitObject.getTime() + VoiceChatGarbageCollection.timeBetweenVoiceChannelCreations)
                         iter.remove();
@@ -144,10 +144,10 @@ class VoiceChatGarbageCollection {
 
     public boolean canRun(@Nonnull Guild guild) {
         long currentTime = this.currentTime();
-        RateLimitObject time = rateLimitMap.getOrDefault(guild.getIdLong(), new RateLimitObject(0L, 0));
+        RateLimitObject time = this.rateLimitMap.getOrDefault(guild.getIdLong(), new RateLimitObject(0L, 0));
 
         if (currentTime > time.getTime() + VoiceChatGarbageCollection.timeBetweenVoiceChannelCreations) {
-            rateLimitMap.remove(guild.getIdLong());
+            this.rateLimitMap.remove(guild.getIdLong());
             this.addRateLimit(guild);
             return true;
         } else {
@@ -163,8 +163,8 @@ class VoiceChatGarbageCollection {
         }
 
         RateLimitObject rateLimitObject = this.rateLimitMap.get(guild.getIdLong());
-        rateLimitObject.times++;
-        LOGGER.debug(String.format("Rate limit count %s times", rateLimitObject.times));
+        rateLimitObject.incrementTimes();
+        LOGGER.debug(String.format("Rate limit count %s times", rateLimitObject.getTimes()));
         this.rateLimitMap.put(guild.getIdLong(), rateLimitObject);
     }
 }

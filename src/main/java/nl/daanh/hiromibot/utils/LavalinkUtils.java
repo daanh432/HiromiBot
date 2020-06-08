@@ -49,8 +49,8 @@ public class LavalinkUtils {
         try {
             JdaLavalink lavalink = new JdaLavalink(
                     LavalinkUtils.getIdFromToken(LavalinkUtils.token),
-                    SHARD_COUNT,
-                    shardId -> Bot.getInstance().getShardManager().getShardById(shardId)
+                    Bot.SHARD_COUNT,
+                    shardId -> Bot.getShardManager().getShardById(shardId)
             );
 
             LavalinkUtils.token = null;
@@ -69,14 +69,8 @@ public class LavalinkUtils {
     }
 
     public static JdaLavalink getLavalink() {
-        return lavalink;
+        return LavalinkUtils.lavalink;
     }
-
-//    public IPlayer createPlayer(long guildId) {
-//        return isEnabled()
-//                ? lavalink.getLink(String.valueOf(guildId)).getPlayer()
-//                : new LavaplayerPlayerWrapper(audioUtils.getPlayerManager().createPlayer());
-//    }
 
     public static void openConnection(VoiceChannel channel) {
         final AudioManager audioManager = channel.getGuild().getAudioManager();
@@ -84,17 +78,17 @@ public class LavalinkUtils {
         // Turn on the deafen icon for the bot
         audioManager.setSelfDeafened(true);
 
-        lavalink.getLink(channel.getGuild()).connect(channel);
+        LavalinkUtils.lavalink.getLink(channel.getGuild()).connect(channel);
     }
 
     public static void closeConnection(Guild guild) {
         PlayerManager.getInstance().purge(guild);
-        lavalink.getLink(guild).disconnect();
-        lavalink.getLink(guild).destroy();
+        LavalinkUtils.lavalink.getLink(guild).disconnect();
+        LavalinkUtils.lavalink.getLink(guild).destroy();
     }
 
     public static boolean isConnected(Guild g) {
-        return lavalink.getLink(g).getState() == Link.State.CONNECTED;
+        return LavalinkUtils.lavalink.getLink(g).getState() == Link.State.CONNECTED;
     }
 
     public static VoiceChannel getConnectedChannel(@Nonnull Guild guild) {

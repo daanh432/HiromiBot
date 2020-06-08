@@ -70,8 +70,8 @@ public class RateLimiter {
     private static void RateLimit(MessageChannel channel, User user) {
         if (buffer.containsKey(user.getIdLong())) {
             RateLimitObject rateLimitObject = buffer.get(user.getIdLong());
-            rateLimitObject.times++;
-            if (rateLimitObject.times == 2) {
+            rateLimitObject.incrementTimes();
+            if (rateLimitObject.getTimes() == 2) {
                 channel.sendMessage("OwO calm down! I'm cooling down from your last request!").queue();
             }
         } else {

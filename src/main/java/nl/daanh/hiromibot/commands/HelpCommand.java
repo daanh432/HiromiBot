@@ -42,7 +42,7 @@ public class HelpCommand implements CommandInterface {
         if (args.isEmpty()) {
             StringBuilder builder = new StringBuilder();
             builder.append("List of commands:\n");
-            commandManager.getCommands().stream().map(CommandInterface::getInvoke).forEach(
+            this.commandManager.getCommands().stream().map(CommandInterface::getInvoke).forEach(
                     (it) -> builder.append("`")
                             .append(DatabaseManager.instance.getPrefix(guildId))
                             .append(it).append("`\n")
@@ -53,7 +53,7 @@ public class HelpCommand implements CommandInterface {
 
         String invoke = args.get(0);
 
-        CommandInterface command = commandManager.getCommand(invoke);
+        CommandInterface command = this.commandManager.getCommand(invoke);
 
         if (command == null) {
             channel.sendMessage("Oh oh.. It looks like the command " + invoke + " doesn't exist!").queue();

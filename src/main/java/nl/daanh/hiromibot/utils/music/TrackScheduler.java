@@ -50,7 +50,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
     }
 
     public BlockingQueue<AudioTrack> getQueue() {
-        return queue;
+        return this.queue;
     }
 
     public int getQueueSize() {
@@ -71,14 +71,14 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
         // track goes to the queue instead.
 
-        if (queue.size() >= QUEUE_SIZE) {
+        if (this.queue.size() >= QUEUE_SIZE) {
             throw new QueueToBigException("Queue size limit has been reached / surpassed");
         }
 
-        if (player.getPlayingTrack() != null) {
-            queue.offer(track);
+        if (this.player.getPlayingTrack() != null) {
+            this.queue.offer(track);
         } else {
-            player.playTrack(track);
+            this.player.playTrack(track);
         }
     }
 
@@ -88,8 +88,8 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
     public void nextTrack() {
         // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
         // giving null to startTrack, which is a valid argument and will simply stop the player.
-        if (queue.size() > 0) {
-            player.playTrack(queue.poll());
+        if (this.queue.size() > 0) {
+            this.player.playTrack(this.queue.poll());
             return;
         }
         LavalinkUtils.closeConnection(this.guildMusicManager.getGuild());
@@ -99,7 +99,7 @@ public class TrackScheduler extends AudioEventAdapterWrapped {
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
         if (endReason.mayStartNext) {
-            nextTrack();
+            this.nextTrack();
         }
     }
 

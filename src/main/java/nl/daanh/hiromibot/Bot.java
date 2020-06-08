@@ -46,68 +46,54 @@ import java.util.EnumSet;
 public class Bot {
     public static final int SHARD_COUNT = 1;
     private static final Logger LOGGER = LoggerFactory.getLogger(Bot.class);
-    private static Bot instance;
-    private ShardManager shardManager;
+    private static ShardManager shardManager;
 
-    private Bot() {
-        try {
-            // Load config file
-            final Config config = Config.getInstance();
+    private Bot(final Config config) throws LoginException {
+        this.setEmbedTemplate();
+        this.setUnirestSettings(config);
 
-            // Set utils
-            this.setEmbedTemplate();
-            this.setUnirestSettings(config);
+        final DefaultShardManagerBuilder shardManagerBuilder = DefaultShardManagerBuilder.create(
+                GatewayIntent.GUILD_BANS,
+                GatewayIntent.GUILD_VOICE_STATES,
+                GatewayIntent.GUILD_MESSAGES,
+                GatewayIntent.GUILD_MESSAGE_REACTIONS
+        );
+        shardManagerBuilder.setChunkingFilter(ChunkingFilter.NONE);
 
-            final DefaultShardManagerBuilder shardManagerBuilder = DefaultShardManagerBuilder.create(
-                    GatewayIntent.GUILD_BANS,
-                    GatewayIntent.GUILD_VOICE_STATES,
-                    GatewayIntent.GUILD_MESSAGES,
-                    GatewayIntent.GUILD_MESSAGE_REACTIONS
-            );
-            shardManagerBuilder.setChunkingFilter(ChunkingFilter.NONE);
+        // Create lavalink instances
+        new LavalinkUtils(config.getString("token"));
+        final JdaLavalink lavalink = LavalinkUtils.getLavalink();
+        shardManagerBuilder.addEventListeners(lavalink);
+        shardManagerBuilder.setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor());
 
+        // Build JDA
+        shardManagerBuilder.setToken(config.getString("token"))
+                // Disable parts of the cache
+                .disableCache(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS))
+                .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
+                // Enable the bulk delete event
+                .setBulkDeleteSplittingEnabled(false)
+                // Set activity of Discord user
+                .setActivity(Activity.listening(config.getString("activity")))
+                // Add listeners
+                .addEventListeners(new CommandListener())
+                .addEventListeners(new MusicListener())
+                .addEventListeners(VoiceChatListener.getInstance())
+                // Set shard count
+                .setShardsTotal(Bot.SHARD_COUNT);
 
-            // Create lavalink instances
-            final LavalinkUtils lavalinkUtils = new LavalinkUtils(config.getString("token"));
-            final JdaLavalink lavalink = LavalinkUtils.getLavalink();
-            shardManagerBuilder.addEventListeners(lavalink);
-            shardManagerBuilder.setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor());
+        Bot.shardManager = shardManagerBuilder.build();
 
-            // Build JDA
-            shardManagerBuilder.setToken(config.getString("token"))
-                    // Disable parts of the cache
-                    .disableCache(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS))
-                    .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
-                    // Enable the bulk delete event
-                    .setBulkDeleteSplittingEnabled(false)
-                    // Set activity of Discord user
-                    .setActivity(Activity.listening(config.getString("activity")))
-                    // Add listeners
-                    .addEventListeners(new CommandListener())
-                    .addEventListeners(new MusicListener())
-                    .addEventListeners(VoiceChatListener.getInstance())
-                    // Set shard count
-                    .setShardsTotal(SHARD_COUNT);
-
-            shardManager = shardManagerBuilder.build();
-
-            LOGGER.info("Bot has started with " + shardManager.getShards().size() + " shards on " + shardManager.getGuilds().size() + " guilds.");
-        } catch (LoginException e) {
-            e.printStackTrace();
-        }
+        Bot.LOGGER.info("Bot has started with " + Bot.shardManager.getShards().size() + " shards on " + Bot.shardManager.getGuilds().size() + " guilds.");
     }
 
-    public static Bot getInstance() {
-        return instance;
+    public static void main(String[] args) throws IOException, LoginException {
+        final Config config = new Config(new File("settings.json"));
+        new Bot(config);
     }
 
-    public static void main(String[] args) throws IOException {
-        new Config(new File("settings.json"));
-        instance = new Bot();
-    }
-
-    public ShardManager getShardManager() {
-        return this.shardManager;
+    public static ShardManager getShardManager() {
+        return Bot.shardManager;
     }
 
     private void setUnirestSettings(Config config) {

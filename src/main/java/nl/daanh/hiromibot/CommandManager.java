@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import nl.daanh.hiromibot.commands.*;
 import nl.daanh.hiromibot.commands.fun.HugCommand;
 import nl.daanh.hiromibot.commands.fun.MemeCommand;
-import nl.daanh.hiromibot.commands.fun.MinecraftCommand;
 import nl.daanh.hiromibot.commands.fun.PatCommand;
 import nl.daanh.hiromibot.commands.moderation.BanCommand;
 import nl.daanh.hiromibot.commands.moderation.KickCommand;
@@ -47,39 +46,38 @@ public class CommandManager {
         final Config config = Config.getInstance();
 
         // Other commands
-        addCommand(new HelpCommand(this));
-        addCommand(new UserInformationCommand());
-        addCommand(new PingCommand());
-        addCommand(new StatusCommand());
-        addCommand(new InviteCommand());
+        this.addCommand(new HelpCommand(this));
+        this.addCommand(new UserInformationCommand());
+        this.addCommand(new PingCommand());
+        this.addCommand(new StatusCommand());
+        this.addCommand(new InviteCommand());
+        this.addCommand(new SettingsCommand());
 
         // Moderation commands
         if (config.getBoolean("loadModerationCommands")) {
-            addCommand(new SettingsCommand());
-            addCommand(new KickCommand());
-            addCommand(new BanCommand());
-            addCommand(new UnbanCommand());
+            this.addCommand(new KickCommand());
+            this.addCommand(new BanCommand());
+            this.addCommand(new UnbanCommand());
         }
 
         // Fun commands
         if (config.getBoolean("loadFunCommands")) {
-            addCommand(new MemeCommand());
-            addCommand(new PatCommand());
-            addCommand(new HugCommand());
-            addCommand(new MinecraftCommand());
+            this.addCommand(new MemeCommand());
+            this.addCommand(new PatCommand());
+            this.addCommand(new HugCommand());
+//            this.addCommand(new MinecraftCommand());
         }
 
         // Music commands
         if (config.getBoolean("loadMusicCommands")) {
-            addCommand(new JoinVoiceChatCommand());
-//            addCommand(new LeaveVoiceChatCommand()); // Made this an alias of the stop command
-            addCommand(new PlayCommand());
-            addCommand(new StopCommand());
-            addCommand(new QueueCommand(eventWaiter));
-            addCommand(new SkipCommand());
-            addCommand(new NowPlayingCommand());
-            addCommand(new ResumeCommand());
-            addCommand(new PauseCommand());
+            this.addCommand(new JoinVoiceChatCommand());
+            this.addCommand(new PlayCommand());
+            this.addCommand(new StopCommand());
+            this.addCommand(new QueueCommand(eventWaiter));
+            this.addCommand(new SkipCommand());
+            this.addCommand(new NowPlayingCommand());
+            this.addCommand(new ResumeCommand());
+            this.addCommand(new PauseCommand());
         }
     }
 
@@ -97,7 +95,7 @@ public class CommandManager {
             if (it.getAliases().stream().anyMatch((it2) -> it2.equalsIgnoreCase(command.getInvoke()))) found = true;
 
             // Alias alias
-            if (it.getAliases().stream().anyMatch((it2) -> command.getAliases().indexOf(it2) > -1)) found = true;
+            if (it.getAliases().stream().anyMatch((it2) -> command.getAliases().contains(it2))) found = true;
 
             return found;
         });
@@ -106,7 +104,7 @@ public class CommandManager {
             throw new IllegalArgumentException("There's already a command defined with that name.");
         }
 
-        commands.add(command);
+        this.commands.add(command);
     }
 
     @Nullable

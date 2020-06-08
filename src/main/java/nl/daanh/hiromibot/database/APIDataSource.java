@@ -61,10 +61,10 @@ public class APIDataSource implements DatabaseManager {
     }
 
     private JSONObject fetchSettings(Long guildId) {
-        JSONObject jsonObject = WebUtils.fetchJsonFromUrlApi(getGuildUrl(guildId));
+        JSONObject jsonObject = WebUtils.fetchJsonFromUrlApi(this.getGuildUrl(guildId));
         if (jsonObject.has("setting")) {
-            jsonObject.getJSONObject("setting").put("local_expires_at", Instant.now().getEpochSecond() + EXPIRES_IN); // Expire in X seconds from now
-            settingsCache.put(guildId, jsonObject.getJSONObject("setting"));
+            jsonObject.getJSONObject("setting").put("local_expires_at", Instant.now().getEpochSecond() + this.EXPIRES_IN); // Expire in X seconds from now
+            this.settingsCache.put(guildId, jsonObject.getJSONObject("setting"));
             return jsonObject.getJSONObject("setting");
         }
         return jsonObject;
@@ -78,17 +78,17 @@ public class APIDataSource implements DatabaseManager {
                 .addFormDataPart("setting", key)
                 .addFormDataPart("value", value)
                 .build();
-        Request.Builder request = WebUtils.postToUrlApi(getGuildUrl(guildId));
+        Request.Builder request = WebUtils.postToUrlApi(this.getGuildUrl(guildId));
         request.post(requestBody);
 
         try (Response response = WebUtils.client.newCall(request.build()).execute()) {
             if (response.code() == 201) {
                 // Save new setting in cache immediately to instantly let settings take effect.
-                if (settingsCache.containsKey(guildId)) {
-                    JSONObject cachedSettings = settingsCache.get(guildId);
-                    cachedSettings.put("local_expires_at", Instant.now().getEpochSecond() + EXPIRES_IN); // Expire in X seconds from now
+                if (this.settingsCache.containsKey(guildId)) {
+                    JSONObject cachedSettings = this.settingsCache.get(guildId);
+                    cachedSettings.put("local_expires_at", Instant.now().getEpochSecond() + this.EXPIRES_IN); // Expire in X seconds from now
                     cachedSettings.getJSONObject("data").put(key, value);
-                    settingsCache.put(guildId, cachedSettings);
+                    this.settingsCache.put(guildId, cachedSettings);
                 }
             } else if (response.code() == 401) {
                 throw new HiromiApiAuthException();
@@ -102,22 +102,22 @@ public class APIDataSource implements DatabaseManager {
 
     private String getKey(Long guildId, String key) {
         // Check if guild settings are cached and not expired if not then it returns the value straight from the cache
-        if (settingsCache.containsKey(guildId)) {
-            JSONObject guildCache = settingsCache.get(guildId);
+        if (this.settingsCache.containsKey(guildId)) {
+            JSONObject guildCache = this.settingsCache.get(guildId);
             if (guildCache.has("local_expires_at") && guildCache.has("data")) {
                 if (guildCache.getLong("local_expires_at") > Instant.now().getEpochSecond()) {
                     JSONObject guildSettingsCache = guildCache.getJSONObject("data");
                     if (guildSettingsCache.has(key)) {
                         return guildSettingsCache.getString(key);
                     } else {
-                        return getDefaultSetting(key);
+                        return this.getDefaultSetting(key);
                     }
                 }
             }
         }
 
         // Fetch settings from online api
-        JSONObject jsonObject = fetchSettings(guildId);
+        JSONObject jsonObject = this.fetchSettings(guildId);
 
         // If online api contains correct setting return it
         if (jsonObject.has("data") &&
@@ -125,57 +125,57 @@ public class APIDataSource implements DatabaseManager {
             return jsonObject.getJSONObject("data").getString(key);
         }
 
-        return getDefaultSetting(key);
+        return this.getDefaultSetting(key);
     }
 
     @Override
     public String getPrefix(long guildId) {
-        return getKey(guildId, "prefix");
+        return this.getKey(guildId, "prefix");
     }
 
     @Override
     public void setPrefix(long guildId, String newPrefix) {
-        writeKey(guildId, "prefix", newPrefix);
+        this.writeKey(guildId, "prefix", newPrefix);
     }
 
     @Override
     public boolean getMusicEnabled(long guildId) {
-        String musicEnabled = getKey(guildId, "musicEnabled").toLowerCase();
+        String musicEnabled = this.getKey(guildId, "musicEnabled").toLowerCase();
         return musicEnabled.equals("on") || musicEnabled.equals("true") || musicEnabled.equals("enabled") || musicEnabled.equals("1") || musicEnabled.equals("enable");
     }
 
     @Override
     public void setMusicEnabled(long guildId, boolean enabled) {
-        writeKey(guildId, "musicEnabled", enabled ? "true" : "false");
+        this.writeKey(guildId, "musicEnabled", enabled ? "true" : "false");
     }
 
     @Override
     public boolean getFunEnabled(long guildId) {
-        String funEnabled = getKey(guildId, "funEnabled").toLowerCase();
+        String funEnabled = this.getKey(guildId, "funEnabled").toLowerCase();
         return funEnabled.equals("on") || funEnabled.equals("true") || funEnabled.equals("enabled") || funEnabled.equals("1") || funEnabled.equals("enable");
     }
 
     @Override
     public void setFunEnabled(long guildId, boolean enabled) {
-        writeKey(guildId, "funEnabled", enabled ? "true" : "false");
+        this.writeKey(guildId, "funEnabled", enabled ? "true" : "false");
     }
 
     @Override
     public boolean getModerationEnabled(long guildId) {
-        String moderationEnabled = getKey(guildId, "moderationEnabled").toLowerCase();
+        String moderationEnabled = this.getKey(guildId, "moderationEnabled").toLowerCase();
         return moderationEnabled.equals("on") || moderationEnabled.equals("true") || moderationEnabled.equals("enabled") || moderationEnabled.equals("1") || moderationEnabled.equals("enable");
     }
 
     @Override
     public void setModerationEnabled(long guildId, boolean enabled) {
-        writeKey(guildId, "moderationEnabled", enabled ? "true" : "false");
+        this.writeKey(guildId, "moderationEnabled", enabled ? "true" : "false");
     }
 
     @Nullable
     @Override
     public Long getCreateVoiceChannelId(long guildId) {
         try {
-            String longString = getKey(guildId, "createVoiceChannelId");
+            String longString = this.getKey(guildId, "createVoiceChannelId");
             return Long.parseLong(longString);
         } catch (NumberFormatException e) {
             return null;
@@ -184,7 +184,7 @@ public class APIDataSource implements DatabaseManager {
 
     @Override
     public void setCreateVoiceChannelId(long guildId, long voiceChannelId) {
-        writeKey(guildId, "createVoiceChannelId", String.valueOf(voiceChannelId));
+        this.writeKey(guildId, "createVoiceChannelId", String.valueOf(voiceChannelId));
     }
 
     @Override

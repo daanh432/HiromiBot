@@ -30,7 +30,7 @@ public class StatusCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {
         StringBuilder stringBuilder = new StringBuilder();
-        ShardManager shardManager = Bot.getInstance().getShardManager();
+        ShardManager shardManager = Bot.getShardManager();
 
         stringBuilder.append("Aww! You're interested in me how sweet. Well here you go:\n");
         stringBuilder.append("I'm currently serving ").append(shardManager.getGuildCache().size()).append(" guilds\n");

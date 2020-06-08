@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
 import java.util.Timer;
 
 public class CommandListener extends ListenerAdapter {
-    private static Timer garbageCollectionTimer = new Timer();
+    private static final Timer garbageCollectionTimer = new Timer();
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandListener.class);
     private final CommandManager commandManager;
     private final EventWaiter eventWaiter;
@@ -89,7 +89,7 @@ public class CommandListener extends ListenerAdapter {
         if (event.getAuthor().getIdLong() == Config.getInstance().getLong("owner")
                 && event.getJDA().getShardManager() != null
                 && rawMessage.equalsIgnoreCase(Config.getInstance().getString("prefix") + "shutdown")) {
-            shutdown(event.getJDA().getShardManager());
+            this.shutdown(event.getJDA().getShardManager());
             return;
         }
 
@@ -107,7 +107,7 @@ public class CommandListener extends ListenerAdapter {
             return;
 
         if (RateLimiter.AllowedToRun(event.getChannel(), event.getMember())) {
-            commandManager.handle(event, prefix);
+            this.commandManager.handle(event, prefix);
         }
     }
 

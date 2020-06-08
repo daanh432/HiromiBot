@@ -41,7 +41,7 @@ public class QueueCommand implements CommandInterface {
     private final Paginator.Builder pbuilder;
 
     public QueueCommand(EventWaiter eventWaiter) {
-        pbuilder = new Paginator.Builder().setColumns(1)
+        this.pbuilder = new Paginator.Builder().setColumns(1)
                 .setItemsPerPage(20)
                 .showPageNumbers(true)
                 .waitOnSinglePage(false)
@@ -83,11 +83,11 @@ public class QueueCommand implements CommandInterface {
                 if (specifiedPage >= 0 && specifiedPage < pageCount) {
                     currentPage = specifiedPage;
                 } else {
-                    channel.sendMessage(EmbedUtils.defaultMusicEmbed("Specified page is out of range. " + getUsage(), false).build()).queue();
+                    channel.sendMessage(EmbedUtils.defaultMusicEmbed("Specified page is out of range. " + this.getUsage(), false).build()).queue();
                     return;
                 }
             } catch (NumberFormatException exception) {
-                channel.sendMessage(EmbedUtils.defaultMusicEmbed("Specified page is not valid. " + getUsage(), false).build()).queue();
+                channel.sendMessage(EmbedUtils.defaultMusicEmbed("Specified page is not valid. " + this.getUsage(), false).build()).queue();
                 return;
             }
         }
@@ -95,7 +95,7 @@ public class QueueCommand implements CommandInterface {
         // Pagination in list
 
 //        tracks.subList(end, size).clear();
-        pbuilder.clearItems();
+        this.pbuilder.clearItems();
 
         long totalDuration = 0;
 
@@ -106,7 +106,7 @@ public class QueueCommand implements CommandInterface {
                     TimeUnit.MILLISECONDS.toMinutes(trackInfo.length),
                     TimeUnit.MILLISECONDS.toSeconds(trackInfo.length) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(trackInfo.length))
             );
-            pbuilder.addItems(String.format("%s - (%s)\n", trackInfo.title, trackDuration));
+            this.pbuilder.addItems(String.format("%s - (%s)\n", trackInfo.title, trackDuration));
         }
 
         long hours = TimeUnit.MILLISECONDS.toHours(totalDuration);
@@ -115,7 +115,7 @@ public class QueueCommand implements CommandInterface {
 
         String totalDurationString = String.format("%h h, %d min, %d sec", hours, minutes, seconds);
 
-        Paginator p = pbuilder
+        Paginator p = this.pbuilder
                 .setText(String.format("Total queue length: %s.\n" +
                         "Use the buttons down below to switch pages.", totalDurationString))
                 .setUsers(member.getUser())
