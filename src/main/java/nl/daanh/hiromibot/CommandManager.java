@@ -30,9 +30,9 @@ import nl.daanh.hiromibot.commands.moderation.KickCommand;
 import nl.daanh.hiromibot.commands.moderation.SettingsCommand;
 import nl.daanh.hiromibot.commands.moderation.UnbanCommand;
 import nl.daanh.hiromibot.commands.music.*;
+import nl.daanh.hiromibot.database.DatabaseManager;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
-import nl.daanh.hiromibot.utils.SettingsUtil;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -138,7 +138,7 @@ public class CommandManager {
 
             CommandContext ctx = new CommandContext(event, args);
 
-            boolean enabledCommand = SettingsUtil.getEnabledCategories(event.getGuild().getIdLong()).stream().anyMatch((it) -> it == command.getCategory());
+            boolean enabledCommand = DatabaseManager.instance.getEnabledCategories(event.getGuild().getIdLong()).stream().anyMatch((it) -> it == command.getCategory());
 
             if (!enabledCommand) {
                 event.getChannel().sendMessage("This command is disabled on this server. Please contact an server administrator if you think this is an error.").queue();

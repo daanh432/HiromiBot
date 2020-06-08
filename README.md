@@ -1,5 +1,4 @@
 # WARNING: Readme is work in progress.
-Build status: ![Gradle Package](https://github.com/daanh432/HiromiBot/workflows/Gradle%20Package/badge.svg?branch=master)
 
 # Hiromi Bot
 
@@ -18,7 +17,7 @@ These instructions will get you a copy of the project up and running on your loc
 What things you need to install the software and how to install them
 
 #### Java 11
-Go to the [OpenJDK Archive](https://jdk.java.net/archive/) and look for Java version 1.11.2.
+Go to the [OpenJDK Archive](https://jdk.java.net/archive/) and look for Java version 11.0.6.
 
 #### Discord Bot Token
 - To get a Discord Bot token go to your [Developer Portal](https://discordapp.com/developers/applications).

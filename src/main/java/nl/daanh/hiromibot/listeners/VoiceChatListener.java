@@ -26,12 +26,12 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import nl.daanh.hiromibot.database.DatabaseManager;
 import nl.daanh.hiromibot.ratelimiting.RateLimitObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.*;
 
@@ -39,12 +39,10 @@ public class VoiceChatListener extends ListenerAdapter {
     private final static Logger LOGGER = LoggerFactory.getLogger(VoiceChatListener.class);
     private static VoiceChatListener INSTANCE;
     private final VoiceChatGarbageCollection voiceChatGarbageCollection;
-    private final HashMap<Guild, VoiceChannel> createChannels;
     private final List<VoiceChannel> managedChannels;
 
     private VoiceChatListener() {
         this.voiceChatGarbageCollection = new VoiceChatGarbageCollection();
-        this.createChannels = new HashMap<>();
         this.managedChannels = new ArrayList<>();
     }
 
@@ -80,15 +78,6 @@ public class VoiceChatListener extends ListenerAdapter {
         this.checkForDelete(guild, channel);
     }
 
-    public void setCreateChannel(@Nonnull Guild guild, @Nonnull VoiceChannel channel) {
-        this.createChannels.put(guild, channel);
-    }
-
-    @Nullable
-    public VoiceChannel getCreateChannel(@Nonnull Guild guild) {
-        return this.createChannels.get(guild);
-    }
-
     private void checkForDelete(@Nonnull Guild guild, @Nonnull VoiceChannel channel) {
         if (managedChannels.contains(channel)) {
             if (channel.getMembers().size() == 0 && guild.getSelfMember().hasPermission(channel, Permission.MANAGE_CHANNEL)) {
@@ -100,21 +89,24 @@ public class VoiceChatListener extends ListenerAdapter {
     }
 
     private void checkForCreate(@Nonnull Guild guild, @Nonnull Member member, @Nonnull VoiceChannel channel) {
-        if (createChannels.containsKey(guild) && createChannels.get(guild).equals(channel) && !member.getUser().isFake() && !member.getUser().isBot()) {
-            String channelName = String.format("%s's Channel", member.getEffectiveName());
-            if (this.voiceChatGarbageCollection.canRun(guild)) {
-                if (channel.getParent() != null && guild.getSelfMember().hasPermission(channel.getParent(), Permission.MANAGE_CHANNEL)) {
-                    channel.getParent().createVoiceChannel(channelName).queue(newChannel -> moveUserToChannel(guild, member, newChannel));
-                } else if (guild.getSelfMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-                    guild.createVoiceChannel(channelName).queue(newChannel -> moveUserToChannel(guild, member, newChannel));
+        Long createVoiceChannelId = DatabaseManager.instance.getCreateVoiceChannelId(guild.getIdLong());
+        if (createVoiceChannelId != null) {
+            if (createVoiceChannelId.equals(channel.getIdLong()) && !member.getUser().isFake() && !member.getUser().isBot()) {
+                String channelName = String.format("%s's Channel", member.getEffectiveName());
+                if (this.voiceChatGarbageCollection.canRun(guild)) {
+                    if (channel.getParent() != null && guild.getSelfMember().hasPermission(channel.getParent(), Permission.MANAGE_CHANNEL)) {
+                        channel.getParent().createVoiceChannel(channelName).queue(newChannel -> moveUserToChannel(guild, member, newChannel));
+                    } else if (guild.getSelfMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+                        guild.createVoiceChannel(channelName).queue(newChannel -> moveUserToChannel(guild, member, newChannel));
+                    }
                 }
             }
         }
     }
 
     private void moveUserToChannel(@Nonnull Guild guild, @Nonnull Member member, @Nonnull VoiceChannel newChannel) {
-        managedChannels.add(newChannel);
         LOGGER.debug("Created new voice channel");
+        managedChannels.add(newChannel);
         if (guild.getSelfMember().hasPermission(Permission.VOICE_MOVE_OTHERS)) {
             guild.moveVoiceMember(member, newChannel).queue();
             LOGGER.debug("Moving member to voice channel");
@@ -132,7 +124,7 @@ class VoiceChatGarbageCollection {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                LOGGER.info("Running voice chat listener garbage collection");
+                LOGGER.debug("Running voice chat listener garbage collection");
                 Iterator<Long> iter = rateLimitMap.keySet().iterator();
                 while (iter.hasNext()) {
                     Long guildId = iter.next();
@@ -172,6 +164,7 @@ class VoiceChatGarbageCollection {
 
         RateLimitObject rateLimitObject = this.rateLimitMap.get(guild.getIdLong());
         rateLimitObject.times++;
+        LOGGER.debug(String.format("Rate limit count %s times", rateLimitObject.times));
         this.rateLimitMap.put(guild.getIdLong(), rateLimitObject);
     }
 }

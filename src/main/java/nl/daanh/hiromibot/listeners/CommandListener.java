@@ -31,9 +31,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import nl.daanh.hiromibot.CommandManager;
 import nl.daanh.hiromibot.Config;
+import nl.daanh.hiromibot.database.DatabaseManager;
 import nl.daanh.hiromibot.ratelimiting.RateLimiter;
 import nl.daanh.hiromibot.ratelimiting.RateLimiterGarbageCollection;
-import nl.daanh.hiromibot.utils.SettingsUtil;
 import nl.daanh.hiromibot.utils.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,7 @@ public class CommandListener extends ListenerAdapter {
             return;
 
         // Check prefix
-        String prefix = rawMessage.startsWith(Config.getInstance().getString("prefix")) ? Config.getInstance().getString("prefix") : SettingsUtil.getPrefix(event.getGuild().getIdLong());
+        String prefix = rawMessage.startsWith(Config.getInstance().getString("prefix")) ? Config.getInstance().getString("prefix") : DatabaseManager.instance.getPrefix(event.getGuild().getIdLong());
         if (!rawMessage.startsWith(prefix))
             return;
 

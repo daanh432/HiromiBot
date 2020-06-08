@@ -16,33 +16,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package nl.daanh.hiromibot.utils;
+package nl.daanh.hiromibot.database;
 
+import nl.daanh.hiromibot.exceptions.HiromiApiAuthException;
+import nl.daanh.hiromibot.exceptions.HiromiApiTooManyRequestsException;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.utils.WebUtils;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class SettingsUtil {
-    private static final Integer EXPIRES_IN = 60; // 60 seconds
-    private static final Logger LOGGER = LoggerFactory.getLogger(SettingsUtil.class);
-    private static final HashMap<Long, JSONObject> settingsCache = new HashMap<>();
+public class APIDataSource implements DatabaseManager {
+    private final Integer EXPIRES_IN = 60; // 60 seconds
+    private final HashMap<Long, JSONObject> settingsCache = new HashMap<>();
 
-    private static String getGuildUrl(Long guildId) {
+    private String getGuildUrl(Long guildId) {
         return String.format("https://hiromi.daanh.nl/api/v1/settings/%s/guilds", guildId.toString());
     }
 
-    private static String getDefaultSetting(String key) {
+    private String getDefaultSetting(String key) {
         // If value has not been found on the online api or in the cache return the default value
         switch (key) {
             case "prefix":
@@ -52,12 +53,14 @@ public class SettingsUtil {
             case "funEnabled":
             case "moderationEnabled":
                 return "true";
+            case "createVoiceChannelId":
+                return null;
             default:
                 return String.format("NO_DEFAULT_VALUE_FOR_%s", key.toUpperCase());
         }
     }
 
-    private static JSONObject fetchSettings(Long guildId) {
+    private JSONObject fetchSettings(Long guildId) {
         JSONObject jsonObject = WebUtils.fetchJsonFromUrlApi(getGuildUrl(guildId));
         if (jsonObject.has("setting")) {
             jsonObject.getJSONObject("setting").put("local_expires_at", Instant.now().getEpochSecond() + EXPIRES_IN); // Expire in X seconds from now
@@ -67,7 +70,7 @@ public class SettingsUtil {
         return jsonObject;
     }
 
-    private static void writeKey(Long guildId, String key, String value) {
+    private void writeKey(Long guildId, String key, String value) {
         // Store new setting in the API to retain settings on reboot
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -97,7 +100,7 @@ public class SettingsUtil {
         }
     }
 
-    private static String getKey(Long guildId, String key) {
+    private String getKey(Long guildId, String key) {
         // Check if guild settings are cached and not expired if not then it returns the value straight from the cache
         if (settingsCache.containsKey(guildId)) {
             JSONObject guildCache = settingsCache.get(guildId);
@@ -125,48 +128,73 @@ public class SettingsUtil {
         return getDefaultSetting(key);
     }
 
-    public static String getPrefix(Long guildId) {
+    @Override
+    public String getPrefix(long guildId) {
         return getKey(guildId, "prefix");
     }
 
-    public static void setPrefix(Long guildId, String prefix) {
-        writeKey(guildId, "prefix", prefix);
+    @Override
+    public void setPrefix(long guildId, String newPrefix) {
+        writeKey(guildId, "prefix", newPrefix);
     }
 
-    public static Boolean getMusicEnabled(Long guildId) {
+    @Override
+    public boolean getMusicEnabled(long guildId) {
         String musicEnabled = getKey(guildId, "musicEnabled").toLowerCase();
         return musicEnabled.equals("on") || musicEnabled.equals("true") || musicEnabled.equals("enabled") || musicEnabled.equals("1") || musicEnabled.equals("enable");
     }
 
-    public static void setMusicEnabled(Long guildId, Boolean musicEnabled) {
-        writeKey(guildId, "musicEnabled", musicEnabled ? "true" : "false");
+    @Override
+    public void setMusicEnabled(long guildId, boolean enabled) {
+        writeKey(guildId, "musicEnabled", enabled ? "true" : "false");
     }
 
-    public static Boolean getFunEnabled(Long guildId) {
+    @Override
+    public boolean getFunEnabled(long guildId) {
         String funEnabled = getKey(guildId, "funEnabled").toLowerCase();
         return funEnabled.equals("on") || funEnabled.equals("true") || funEnabled.equals("enabled") || funEnabled.equals("1") || funEnabled.equals("enable");
     }
 
-    public static void setFunEnabled(Long guildId, Boolean funEnabled) {
-        writeKey(guildId, "funEnabled", funEnabled ? "true" : "false");
+    @Override
+    public void setFunEnabled(long guildId, boolean enabled) {
+        writeKey(guildId, "funEnabled", enabled ? "true" : "false");
     }
 
-    public static Boolean getModerationEnabled(Long guildId) {
+    @Override
+    public boolean getModerationEnabled(long guildId) {
         String moderationEnabled = getKey(guildId, "moderationEnabled").toLowerCase();
         return moderationEnabled.equals("on") || moderationEnabled.equals("true") || moderationEnabled.equals("enabled") || moderationEnabled.equals("1") || moderationEnabled.equals("enable");
     }
 
-    public static void setModerationEnabled(Long guildId, Boolean moderationEnabled) {
-        writeKey(guildId, "moderationEnabled", moderationEnabled ? "true" : "false");
+    @Override
+    public void setModerationEnabled(long guildId, boolean enabled) {
+        writeKey(guildId, "moderationEnabled", enabled ? "true" : "false");
     }
 
-    public static List<CommandInterface.CATEGORY> getEnabledCategories(Long guildId) {
+    @Nullable
+    @Override
+    public Long getCreateVoiceChannelId(long guildId) {
+        try {
+            String longString = getKey(guildId, "createVoiceChannelId");
+            return Long.parseLong(longString);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public void setCreateVoiceChannelId(long guildId, long voiceChannelId) {
+        writeKey(guildId, "createVoiceChannelId", String.valueOf(voiceChannelId));
+    }
+
+    @Override
+    public List<CommandInterface.CATEGORY> getEnabledCategories(long guildId) {
         List<CommandInterface.CATEGORY> list = new ArrayList<>();
         list.add(CommandInterface.CATEGORY.OTHER);
 
-        if (SettingsUtil.getMusicEnabled(guildId)) list.add(CommandInterface.CATEGORY.MUSIC);
-        if (SettingsUtil.getFunEnabled(guildId)) list.add(CommandInterface.CATEGORY.FUN);
-        if (SettingsUtil.getModerationEnabled(guildId)) list.add(CommandInterface.CATEGORY.MODERATION);
+        if (this.getMusicEnabled(guildId)) list.add(CommandInterface.CATEGORY.MUSIC);
+        if (this.getFunEnabled(guildId)) list.add(CommandInterface.CATEGORY.FUN);
+        if (this.getModerationEnabled(guildId)) list.add(CommandInterface.CATEGORY.MODERATION);
 
         return list;
     }
