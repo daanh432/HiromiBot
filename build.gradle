@@ -18,9 +18,9 @@ repositories {
 }
 
 shadowJar {
-    baseName = 'HiromiBot'
-    classifier = ''
-    archiveVersion = ''
+    archiveBaseName.set('HiromiBot')
+    archiveClassifier.set('')
+    archiveVersion.set('')
     minimize()
 }
 

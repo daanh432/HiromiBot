@@ -22,7 +22,7 @@ jobs:
         with:
           java-version: 11.0.6
       - name: Create package
-        run: gradlew shadowJar
+        run: ./gradlew shadowJar
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
