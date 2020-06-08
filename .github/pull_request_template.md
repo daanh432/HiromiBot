@@ -6,12 +6,6 @@
 
 ## Affected code
 
-## Screenshots
-
-{screenshot1}
-
-{screenshot2}
-
 ## Todos
 
 - [ ] {todo1}
