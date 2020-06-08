@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public interface DatabaseManager {
-    DatabaseManager instance = new APIDataSource();
+    DatabaseManager instance = new MySQLDataSource();
 
     String getPrefix(long guildId);
 
