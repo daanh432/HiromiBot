@@ -21,7 +21,6 @@ shadowJar {
     archiveBaseName.set('HiromiBot')
     archiveClassifier.set('')
     archiveVersion.set('')
-    minimize()
 }
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
