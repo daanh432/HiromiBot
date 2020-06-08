@@ -25,10 +25,14 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.objects.SelfPermission;
+import nl.daanh.hiromibot.objects.UserPermission;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@UserPermission(Permission.BAN_MEMBERS)
+@SelfPermission(Permission.BAN_MEMBERS)
 public class UnbanCommand implements CommandInterface {
     private boolean isCorrectUser(Guild.Ban ban, String arg) {
         User bannedUser = ban.getUser();
@@ -41,21 +45,10 @@ public class UnbanCommand implements CommandInterface {
         String joinedArgs = String.join("", args);
         TextChannel channel = ctx.getChannel();
         Member member = ctx.getMember();
-        Member selfMember = ctx.getSelfMember();
         Guild guild = ctx.getGuild();
 
         if (args.isEmpty()) {
             channel.sendMessage(this.getHelp()).queue();
-            return;
-        }
-
-        if (member == null || !member.hasPermission(Permission.BAN_MEMBERS)) {
-            channel.sendMessage("You don't have permissions to use this command").queue();
-            return;
-        }
-
-        if (!selfMember.hasPermission(Permission.BAN_MEMBERS)) {
-            channel.sendMessage("I need the ban members permission to unban users. *I know it's weird*").queue();
             return;
         }
 
@@ -72,9 +65,6 @@ public class UnbanCommand implements CommandInterface {
             guild.unban(targetUser).reason(String.format("Unbanned by: %#s", member)).queue();
             channel.sendMessage(String.format("User %#s has been unbanned.", targetUser)).queue();
         });
-
-//        event.getGuild().kick(targetMember, String.format("Kicked by: %#s, with reason: %s", event.getAuthor(), kickReason)).queue();
-//        channel.sendMessage(String.format("User %#s has been unbanned.", targetMember)).queue();
     }
 
     @Override

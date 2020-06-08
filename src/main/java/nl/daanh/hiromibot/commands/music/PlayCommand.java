@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.objects.SelfPermission;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
@@ -33,6 +34,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+@SelfPermission(Permission.VOICE_CONNECT)
+@SelfPermission(Permission.VOICE_SPEAK)
+@SelfPermission(Permission.VOICE_USE_VAD)
 public class PlayCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {

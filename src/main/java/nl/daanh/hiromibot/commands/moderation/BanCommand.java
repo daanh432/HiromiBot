@@ -25,9 +25,13 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.objects.SelfPermission;
+import nl.daanh.hiromibot.objects.UserPermission;
 
 import java.util.List;
 
+@UserPermission(Permission.BAN_MEMBERS)
+@SelfPermission(Permission.BAN_MEMBERS)
 public class BanCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {
@@ -52,8 +56,8 @@ public class BanCommand implements CommandInterface {
         Member targetMember = foundMembers.get(0);
         String kickReason = String.join(" ", args.subList(1, args.size()));
 
-        if (member == null || !member.hasPermission(Permission.BAN_MEMBERS) || !member.canInteract(targetMember)) {
-            channel.sendMessage("You don't have permissions to use this command").queue();
+        if (member == null || !member.canInteract(targetMember)) {
+            channel.sendMessage("You don't have permissions to ban this member").queue();
             return;
         }
 

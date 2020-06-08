@@ -18,15 +18,18 @@
 
 package nl.daanh.hiromibot.commands.moderation;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.database.DatabaseManager;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.objects.UserPermission;
 
 import java.util.List;
 
+@UserPermission(Permission.MANAGE_SERVER)
 public class SettingsCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {

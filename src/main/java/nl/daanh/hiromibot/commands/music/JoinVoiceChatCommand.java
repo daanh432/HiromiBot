@@ -23,12 +23,16 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.objects.SelfPermission;
 import nl.daanh.hiromibot.utils.EmbedUtils;
 import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.List;
 
+@SelfPermission(Permission.VOICE_CONNECT)
+@SelfPermission(Permission.VOICE_SPEAK)
+@SelfPermission(Permission.VOICE_USE_VAD)
 public class JoinVoiceChatCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {

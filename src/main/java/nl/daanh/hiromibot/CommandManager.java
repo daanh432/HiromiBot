@@ -32,6 +32,8 @@ import nl.daanh.hiromibot.commands.music.*;
 import nl.daanh.hiromibot.database.DatabaseManager;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
+import nl.daanh.hiromibot.objects.SelfPermission;
+import nl.daanh.hiromibot.objects.UserPermission;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -141,6 +143,20 @@ public class CommandManager {
             if (!enabledCommand) {
                 event.getChannel().sendMessage("This command is disabled on this server. Please contact an server administrator if you think this is an error.").queue();
                 return;
+            }
+
+            for (UserPermission annotation : command.getClass().getAnnotationsByType(UserPermission.class)) {
+                if (!ctx.getMember().hasPermission(annotation.value())) {
+                    ctx.getChannel().sendMessage(String.format("You don't have the permission ``%s``", annotation.value())).queue();
+                    return;
+                }
+            }
+
+            for (SelfPermission annotation : command.getClass().getAnnotationsByType(SelfPermission.class)) {
+                if (!ctx.getSelfMember().hasPermission(annotation.value())) {
+                    ctx.getChannel().sendMessage(String.format("Oops. It looks like I don't have the permission ``%s``", annotation.value())).queue();
+                    return;
+                }
             }
 
             command.handle(ctx);
