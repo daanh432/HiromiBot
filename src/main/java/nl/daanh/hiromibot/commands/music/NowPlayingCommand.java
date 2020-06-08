@@ -1,6 +1,24 @@
+/*
+ * HiromiBot, a multipurpose open source Discord bot
+ * Copyright (c) 2019 - 2020 daanh432
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package nl.daanh.hiromibot.commands.music;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -8,7 +26,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
-import nl.daanh.hiromibot.utils.music.GuildMusicManager;
 import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.List;
@@ -21,22 +38,21 @@ public class NowPlayingCommand implements CommandInterface {
         Guild guild = ctx.getGuild();
         Member selfMember = ctx.getSelfMember();
         PlayerManager playerManager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = playerManager.getGuildMusicManager(guild);
-        AudioPlayer player = musicManager.player;
+        AudioTrack playingTrack = playerManager.getPlayingTrack(guild);
 
-        if (player.getPlayingTrack() == null || selfMember.getVoiceState() == null || !selfMember.getVoiceState().inVoiceChannel()) {
+        if (playingTrack == null || selfMember.getVoiceState() == null || !selfMember.getVoiceState().inVoiceChannel()) {
             textChannel.sendMessage(EmbedUtils.defaultMusicEmbed("It doesn't look like I'm playing any music.", false).build()).queue();
             return;
         }
 
-        AudioTrackInfo trackInfo = player.getPlayingTrack().getInfo();
+        AudioTrackInfo trackInfo = playingTrack.getInfo();
         textChannel.sendMessage(EmbedUtils.defaultMusicEmbed(String.format(
                 "**Playing** [%s](%s)\n%s %s - %s",
                 trackInfo.title,
                 trackInfo.uri,
-                player.isPaused() ? "\u23F8" : "▶",
-                formatTime(player.getPlayingTrack().getPosition()),
-                formatTime(player.getPlayingTrack().getDuration())
+                playerManager.isPaused(guild) ? "\u23F8" : "▶",
+                formatTime(playingTrack.getPosition()),
+                formatTime(playingTrack.getDuration())
         ), true).build()).queue();
     }
 

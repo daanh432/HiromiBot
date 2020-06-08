@@ -1,3 +1,21 @@
+/*
+ * HiromiBot, a multipurpose open source Discord bot
+ * Copyright (c) 2019 - 2020 daanh432
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package nl.daanh.hiromibot.commands.music;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -7,9 +25,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
 import nl.daanh.hiromibot.utils.RandomUtils;
-import nl.daanh.hiromibot.utils.music.GuildMusicManager;
-import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.List;
 
@@ -27,12 +44,7 @@ public class StopCommand implements CommandInterface {
             return;
         }
 
-        PlayerManager playerManager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = playerManager.getGuildMusicManager(guild);
-
-        musicManager.scheduler.getQueue().clear();
-        musicManager.player.stopTrack();
-        musicManager.player.setPaused(false);
+        LavalinkUtils.closeConnection(guild);
 
         EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed("Stopping and clearing the queue", true);
         textChannel.sendMessage(embedBuilder.build()).queue();
@@ -56,6 +68,6 @@ public class StopCommand implements CommandInterface {
 
     @Override
     public List<String> getAliases() {
-        return List.of("purge", "clear");
+        return List.of("purge", "clear", "leave", "disconnect");
     }
 }

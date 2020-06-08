@@ -16,28 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package nl.daanh.hiromibot;
+package nl.daanh.hiromibot.ratelimiting;
 
-import org.json.JSONObject;
+import java.util.TimerTask;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
-public class Config extends JSONObject {
-
-    private static Config instance;
-
-    public Config(File file) throws IOException {
-        super(load(file));
-        instance = this;
-    }
-
-    private static String load(File file) throws IOException {
-        return new String(Files.readAllBytes(file.toPath()));
-    }
-
-    public static Config getInstance() {
-        return instance;
+public class RateLimiterGarbageCollection extends TimerTask {
+    public void run() {
+        RateLimiter.GarbageCollection();
     }
 }

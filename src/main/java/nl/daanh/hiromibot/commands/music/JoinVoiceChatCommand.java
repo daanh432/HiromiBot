@@ -1,15 +1,31 @@
+/*
+ * HiromiBot, a multipurpose open source Discord bot
+ * Copyright (c) 2019 - 2020 daanh432
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package nl.daanh.hiromibot.commands.music;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.entities.*;
 import nl.daanh.hiromibot.objects.CommandContext;
 import nl.daanh.hiromibot.objects.CommandInterface;
 import nl.daanh.hiromibot.utils.EmbedUtils;
+import nl.daanh.hiromibot.utils.LavalinkUtils;
+import nl.daanh.hiromibot.utils.music.PlayerManager;
 
 import java.util.List;
 
@@ -17,13 +33,13 @@ public class JoinVoiceChatCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {
         TextChannel textChannel = ctx.getChannel();
-        AudioManager audioManager = ctx.getAudioManager();
+        Guild guild = ctx.getGuild();
         Member member = ctx.getMember();
         Member selfMember = ctx.getSelfMember();
 
-        if (audioManager.isConnected()) {
-            if (audioManager.getConnectedChannel() != null) {
-                EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("I'm already connected to `%s`.", audioManager.getConnectedChannel().getName()), false);
+        if (LavalinkUtils.isConnected(guild)) {
+            if (LavalinkUtils.getConnectedChannel(guild) != null) {
+                EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("I'm already connected to `%s`.", LavalinkUtils.getConnectedChannel(guild).getName()), false);
                 textChannel.sendMessage(embedBuilder.build()).queue();
                 return;
             }
@@ -47,8 +63,9 @@ public class JoinVoiceChatCommand implements CommandInterface {
                 return;
             }
 
-            audioManager.openAudioConnection(voiceChannel);
-            EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Joining the voice channel `%s`.", voiceChannel.getName()), false);
+            LavalinkUtils.openConnection(voiceChannel);
+            PlayerManager.getInstance().setLastChannel(guild, textChannel);
+            EmbedBuilder embedBuilder = EmbedUtils.defaultMusicEmbed(String.format("Joining the voice channel `%s`.", voiceChannel.getName()), true);
             textChannel.sendMessage(embedBuilder.build()).queue();
             return;
         }
