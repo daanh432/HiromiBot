@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class MySQLDataSource implements DatabaseManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SQLiteDataSource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MySQLDataSource.class);
 //    private final HikariDataSource ds;
 
 
