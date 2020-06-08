@@ -7,8 +7,8 @@ on:
 name: Build ShadowJar
 
 jobs:
-  tagged-release:
-    name: Tagged Release
+  build-shadowjar-release:
+    name: Build ShadowJar and Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
