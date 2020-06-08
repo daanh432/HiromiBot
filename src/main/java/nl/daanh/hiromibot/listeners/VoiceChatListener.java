@@ -116,7 +116,7 @@ public class VoiceChatListener extends ListenerAdapter {
 
 class VoiceChatGarbageCollection {
     private static final Logger LOGGER = LoggerFactory.getLogger(VoiceChatGarbageCollection.class);
-    private static final int timeBetweenVoiceChannelCreations = 30;
+    private static final int timeBetweenVoiceChannelCreations = 15;
     private final HashMap<Long, RateLimitObject> rateLimitMap;
 
     public VoiceChatGarbageCollection() {

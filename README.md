@@ -1,3 +1,5 @@
+# WARNING: Readme is work in progress.
+
 # Hiromi Bot
 
 Hiromi is a open source Discord Bot. [Discord](https://discordapp.com/) is a VoIP platform commonly used by gamers... W.I.P.
