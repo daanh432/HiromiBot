@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @UserPermission(Permission.BAN_MEMBERS)
-@SelfPermission(Permission.BAN_MEMBERS)
+@SelfPermission(value = Permission.BAN_MEMBERS, errorMessage = "Oh no! I can't unban anyone! I don't have the ban permission. *I know it's weird*")
 public class UnbanCommand implements CommandInterface {
     private boolean isCorrectUser(Guild.Ban ban, String arg) {
         User bannedUser = ban.getUser();

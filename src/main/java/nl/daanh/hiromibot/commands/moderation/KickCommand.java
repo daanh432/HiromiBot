@@ -30,7 +30,7 @@ import nl.daanh.hiromibot.objects.UserPermission;
 
 import java.util.List;
 
-@SelfPermission(Permission.KICK_MEMBERS)
+@SelfPermission(value = Permission.KICK_MEMBERS, errorMessage = "Oh no! I can't kick anyone! I don't have the kick permission.")
 @UserPermission(Permission.KICK_MEMBERS)
 public class KickCommand implements CommandInterface {
 

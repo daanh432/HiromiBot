@@ -31,7 +31,7 @@ import nl.daanh.hiromibot.objects.UserPermission;
 import java.util.List;
 
 @UserPermission(Permission.BAN_MEMBERS)
-@SelfPermission(Permission.BAN_MEMBERS)
+@SelfPermission(value = Permission.BAN_MEMBERS, errorMessage = "Oh no! I can't ban anyone! I don't have the ban permission.")
 public class BanCommand implements CommandInterface {
     @Override
     public void handle(CommandContext ctx) {

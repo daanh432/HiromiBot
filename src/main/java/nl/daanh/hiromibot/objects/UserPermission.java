@@ -28,4 +28,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UserPermission {
     Permission value();
+    String errorMessage() default("");
 }

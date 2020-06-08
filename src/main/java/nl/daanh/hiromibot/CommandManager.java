@@ -147,6 +147,10 @@ public class CommandManager {
 
             for (UserPermission annotation : command.getClass().getAnnotationsByType(UserPermission.class)) {
                 if (!ctx.getMember().hasPermission(annotation.value())) {
+                    if (!annotation.errorMessage().equalsIgnoreCase("")) {
+                        ctx.getChannel().sendMessage(annotation.errorMessage()).queue();
+                        return;
+                    }
                     ctx.getChannel().sendMessage(String.format("You don't have the permission ``%s``", annotation.value())).queue();
                     return;
                 }
@@ -154,6 +158,10 @@ public class CommandManager {
 
             for (SelfPermission annotation : command.getClass().getAnnotationsByType(SelfPermission.class)) {
                 if (!ctx.getSelfMember().hasPermission(annotation.value())) {
+                    if (!annotation.errorMessage().equalsIgnoreCase("")) {
+                        ctx.getChannel().sendMessage(annotation.errorMessage()).queue();
+                        return;
+                    }
                     ctx.getChannel().sendMessage(String.format("Oops. It looks like I don't have the permission ``%s``", annotation.value())).queue();
                     return;
                 }
